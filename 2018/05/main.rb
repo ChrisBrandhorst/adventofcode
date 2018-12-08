@@ -10,8 +10,7 @@ def react(data)
   i = 0
   polymer = []
   loop do
-    fst = data[i]
-    nxt = data[i+1]
+    fst, nxt = data[i, 2]
     break if fst.nil?
 
     if polymer.last && polymer.last.reacts_with?(fst)
