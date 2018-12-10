@@ -62,8 +62,8 @@ class Sky
 
     arr = []
     @lights.each do |l|
-      arr[l.y - y_axis.first] ||= ['.'] * (x_axis.last - x_axis.first)
-      arr[l.y - y_axis.first][l.x - x_axis.first] = '#'
+      arr[l.y - y_axis.first] ||= ['  '] * (x_axis.last - x_axis.first + 1)
+      arr[l.y - y_axis.first][l.x - x_axis.first] = '██'
     end
 
     arr.map{ |y| y.join('') }.join("\n")
