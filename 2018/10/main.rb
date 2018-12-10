@@ -25,7 +25,7 @@ end
 
 class Sky
 
-  attr_reader :lights, :time
+  attr_reader :time
 
   def initialize(lights)
     @lights = lights
@@ -61,7 +61,7 @@ class Sky
     x_axis = self.x_axis
 
     arr = []
-    lights.each do |l|
+    @lights.each do |l|
       arr[l.y - y_axis.first] ||= ['.'] * (x_axis.last - x_axis.first)
       arr[l.y - y_axis.first][l.x - x_axis.first] = '#'
     end
