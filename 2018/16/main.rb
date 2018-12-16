@@ -67,8 +67,6 @@ end
 
 regs = [0] * 4
 data = File.readlines("input_part2")
-  .map{ |l| l.split(' ').map(&:to_i) }
-  .map{ |o| Op.new(regs, o, regs) }
+  .map{ |l| Op.new(regs, l.split(' ').map(&:to_i), regs) }
   .each{ |o| o.method("#{opcodes[o.opcode]}!").call }
 puts "Part 2: #{regs.first}"
-
