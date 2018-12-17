@@ -70,8 +70,9 @@ def get_springs(spring_x, spring_y)
     this_row = $ground[y]
 
     # Find walls
-    left_x = ($minx...spring_x).to_a.reverse.detect{ |x| this_row[x] == '#' || $ground[y+1][x].nil? }
-    right_x = (spring_x+1..$maxx).detect{ |x| this_row[x] == '#' || $ground[y+1][x].nil? }
+    detect_end = lambda{ |x| this_row[x] == '#' || $ground[y+1][x].nil? }
+    left_x = ($minx...spring_x).to_a.reverse.detect(&detect_end)
+    right_x = (spring_x+1..$maxx).detect(&detect_end)
 
     # Done
     break if left_x.nil? || right_x.nil?
