@@ -30,17 +30,17 @@ class Op
 
   OP_KEYS.each do |opkey|
     define_method("is_#{opkey}?") do
-      @after[@out] == method(opkey).call
+      @after[@out] == send(opkey)
     end
     define_method("#{opkey}!") do
-      @after[@out] = method(opkey).call
+      @after[@out] = send(opkey)
     end
   end
 
   def possible_ops(known = {})
     opkey = known[@opcode]
     if opkey.nil?
-      possibles = OP_KEYS.select{ |k| method("is_#{k}?").call } - known.values
+      possibles = OP_KEYS.select{ |k| send("is_#{k}?") } - known.values
       possibles
     else
       [opkey]
