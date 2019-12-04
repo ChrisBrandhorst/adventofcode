@@ -1,8 +1,8 @@
 require '../intcode/intcode'
 
-data = File.read("input").split(",").map(&:to_i)
+input = File.read("input").split(",").map(&:to_i)
 
-intcode = Intcode.new(data)
+intcode = Intcode.new(input)
 
 start = Time.now
 part1 = intcode.run(12, 2)
