@@ -7,8 +7,6 @@ def run(passes)
   passes.each do |pass|
     part1_ok = part2_ok = false
 
-    next if pass.sort != pass
-
     pass.each do |dec|
       c = pass.count(dec)
       part1_ok = c >= 2 if !part1_ok
@@ -24,7 +22,7 @@ def run(passes)
 end
 
 start = Time.now
-passes = (input[0]..input[1]).map(&:to_s).map{ |pass| pass.chars.map(&:to_i) }
+passes = (input[0]..input[1]).map(&:to_s).select{ |pass| pass.chars.sort.join == pass }.map{ |pass| pass.chars.map(&:to_i) }
 puts "Building: #{Time.now-start}s"
 
 start = Time.now
