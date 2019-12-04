@@ -1,4 +1,4 @@
-data = File.readlines("input").map{ |l| l.strip.split(",").map{ |i| [i[0], i[1..-1].to_i] } }
+input = File.readlines("input").map{ |l| l.strip.split(",").map{ |i| [i[0], i[1..-1].to_i] } }
 
 wires_pos = [
   [[0,0]],  # x,y
@@ -19,7 +19,7 @@ def grow!(pts, dir, steps)
 end
 
 start = Time.now
-data.each_with_index do |d,i|
+input.each_with_index do |d,i|
   wire_pos = wires_pos[i]
   d.each{ |m| grow!(wire_pos, m[0], m[1]) }
 end
