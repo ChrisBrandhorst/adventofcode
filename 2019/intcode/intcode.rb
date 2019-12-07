@@ -1,22 +1,30 @@
 class Intcode
 
-  def initialize(start_mem)
-    @mem = start_mem
+  attr_reader :last_output
+
+  def initialize(mem)
+    @mem = mem.clone
+    reset!
+  end
+
+  def reset!
     @wm = @mem.clone
-    @input = []
     @ptr = 0
+    @last_output = nil
+    @input = []
+    self
   end
 
-  def []=(addr, val)
-    @mem[addr] = val
-  end
-
-  def [](addr)
-    @mem[addr]
+  def [](ptr)
+    @wm[ptr]
   end
 
   def with_input(inp)
-    @input = inp
+    if inp.is_a?(Array)
+      @input = @input + inp
+    else
+      @input << inp
+    end
     self
   end
 
@@ -26,23 +34,12 @@ class Intcode
     self
   end
 
-  def add_input(val)
-    @input << val
-    self
-  end
-
-  def run(restart = true)
-    if restart
-      @ptr = 0
-      @wm = @mem.clone if restart
-      @wm[1] = @noun unless @noun.nil?
-      @wm[2] = @verb unless @verb.nil?
-    end
-
-    last_output = nil
+  def run
+    @wm[1] = @noun unless @noun.nil?
+    @wm[2] = @verb unless @verb.nil?
 
     loop do
-      opcode, p1, p2, out = get_instruction(@wm, @ptr)
+      opcode, p1, p2, out = get_cur_instr
 
       case opcode
       when 1
@@ -52,15 +49,13 @@ class Intcode
         @wm[out] = p1 * p2
         @ptr += 4
       when 3
-        inp = next_input
-        # puts "Input: #{inp}"
-        @wm[out] = inp
+        # puts "Input: #{@input}"
+        @wm[out] = get_inp
         @ptr += 2
       when 4
         # puts "Output: #{p1}"
-        last_output = p1
+        @last_output = p1
         @ptr += 2
-        # break
       when 5
         @ptr = p1 != 0 ? p2 : @ptr + 3
       when 6
@@ -72,34 +67,32 @@ class Intcode
         @wm[out] = p1 == p2 ? 1 : 0
         @ptr += 4
       when 99
-        # puts "HALT"
-        last_output = next_input || @wm[0]
         break
       end
     end
-    @input.clear
-    last_output
+    self
   end
 
-  def get_instruction(wm, ptr)
-    opcode = wm[ptr] > 9 ? wm[ptr] % 100 : wm[ptr]
-    modes = wm[ptr] / 100
+  def get_inp
+    # @input.shift
+    @input.size == 1 ? @input.first : @input.shift
+  end
+
+  def get_cur_instr
+    opcode = @wm[@ptr] > 9 ? @wm[@ptr] % 100 : @wm[@ptr]
+    modes = @wm[@ptr] / 100
     [
       opcode,
-      get_param(wm, ptr, modes, 1),
-      get_param(wm, ptr, modes, 2),
-      opcode == 3 ? wm[ptr+1] : wm[ptr+3]
+      get_cur_param(modes, 1),
+      get_cur_param(modes, 2),
+      opcode == 3 ? @wm[@ptr+1] : @wm[@ptr+3]
     ]
   end
 
-  def get_param(wm, ptr, modes, n)
-    val = wm[ptr+n]
+  def get_cur_param(modes, n)
+    val = @wm[@ptr+n]
     mode = n == 1 ? modes % 10 : modes / 10
-    val.nil? || mode == 1 ? val : wm[val]
-  end
-
-  def next_input
-    @input.size == 1 ? @input.first : @input.shift
+    val.nil? || mode == 1 ? val : @wm[val]
   end
 
 end

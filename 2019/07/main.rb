@@ -17,7 +17,7 @@ signals = []
   outputs = []
 
   amps.each_with_index do |amp,i|
-    outputs << amp.with_input([phases[i],outputs.last || 0]).run
+    outputs << amp.reset!.with_input([phases[i],outputs.last || 0]).run.last_output
   end
   signals << outputs.last
 
@@ -32,19 +32,16 @@ start = Time.now
 signals = []
 (AMPS ** RANGE).times do |i|
 
-  amps = (0..AMPS-1).map{ Intcode.new(input) }
   phases = i.to_s(RANGE).rjust(RANGE, "0").chars.map{ |c| c.to_i + RANGE }
   next if phases.uniq.size < AMPS
 
-  # phases = "98765".split('').map(&:to_i)
-
-  amps.each_with_index{ |a,i| a.add_input(phases[i]) }
+  amps = (0..AMPS-1).map{ |i| Intcode.new(input).with_input(phases[i]) }
 
   signal = 0
   while true
     loop_signals = []
     amps.each do |a|
-      signal = a.add_input(signal).run(false)
+      signal = a.with_input(signal).run.last_output
       loop_signals << signal
     end
     break if loop_signals.uniq.size == 1
