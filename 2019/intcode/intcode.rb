@@ -1,22 +1,24 @@
 class Intcode
 
-  attr_reader :last_output
+  attr_reader :output
 
   def initialize(mem)
     @mem = mem.clone
+    @loop_mode = false
     reset!
   end
 
   def reset!
     @wm = @mem.clone
     @ptr = 0
-    @last_output = nil
+    @output = nil
     @input = []
     self
   end
 
-  def [](ptr)
-    @wm[ptr]
+  def loop_mode(lm = true)
+    @loop_mode = lm
+    self
   end
 
   def with_input(inp)
@@ -34,13 +36,17 @@ class Intcode
     self
   end
 
+  def [](ptr)
+    @wm[ptr]
+  end
+
   def run
     @wm[1] = @noun unless @noun.nil?
     @wm[2] = @verb unless @verb.nil?
 
-    loop do
+    0.step do |i|
       opcode, p1, p2, out = get_cur_instr
-
+      
       case opcode
       when 1
         @wm[out] = p1 + p2
@@ -49,13 +55,13 @@ class Intcode
         @wm[out] = p1 * p2
         @ptr += 4
       when 3
-        # puts "Input: #{@input}"
-        @wm[out] = get_inp
+        inp = get_inp
+        @wm[out] = inp
         @ptr += 2
       when 4
-        # puts "Output: #{p1}"
-        @last_output = p1
+        @output = p1
         @ptr += 2
+        break if @loop_mode
       when 5
         @ptr = p1 != 0 ? p2 : @ptr + 3
       when 6
@@ -67,14 +73,15 @@ class Intcode
         @wm[out] = p1 == p2 ? 1 : 0
         @ptr += 4
       when 99
+        @output = @input.first if @loop_mode && i == 0
         break
       end
     end
+    @input.clear
     self
   end
 
   def get_inp
-    # @input.shift
     @input.size == 1 ? @input.first : @input.shift
   end
 
