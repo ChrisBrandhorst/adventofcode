@@ -3,23 +3,21 @@ require '../intcode/intcode'
 input = File.read("input").split(",").map(&:to_i)
 
 RANGE = 5
-AMPS = 5
-
-amps = (0..AMPS-1).map{ Intcode.new(input) }
+AMP_COUNT = 5
 
 start = Time.now
 signals = []
-(AMPS ** RANGE).times do |i|
+amps = (0..AMP_COUNT-1).map{ Intcode.new(input) }
+(AMP_COUNT ** RANGE).times do |i|
 
   phases = i.to_s(RANGE).rjust(RANGE, "0").chars.map(&:to_i)
-  next if phases.uniq.size < AMPS
+  next if phases.uniq.size < AMP_COUNT
   
-  outputs = []
-
-  amps.each_with_index do |amp,i|
-    outputs << amp.reset!.with_input([phases[i],outputs.last || 0]).run.last_output
+  signal = 0
+  amps.each_with_index do |amp,ai|
+    signal = amp.reset!.with_input([phases[ai],signal]).run.output
   end
-  signals << outputs.last
+  signals << signal
 
 end
 
@@ -30,23 +28,23 @@ puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 start = Time.now
 signals = []
-(AMPS ** RANGE).times do |i|
+amps.each(&:loop_mode)
+(AMP_COUNT ** RANGE).times do |i|
 
   phases = i.to_s(RANGE).rjust(RANGE, "0").chars.map{ |c| c.to_i + RANGE }
-  next if phases.uniq.size < AMPS
+  next if phases.uniq.size < AMP_COUNT
 
-  amps = (0..AMPS-1).map{ |i| Intcode.new(input).with_input(phases[i]) }
+  amps.each_with_index{ |a,ai| a.reset!.with_input(phases[ai]) }
 
   signal = 0
   while true
     loop_signals = []
     amps.each do |a|
-      signal = a.with_input(signal).run.last_output
+      signal = a.with_input(signal).run.output
       loop_signals << signal
     end
     break if loop_signals.uniq.size == 1
   end
-
   signals << loop_signals.first
 
 end
