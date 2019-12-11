@@ -66,14 +66,20 @@ class Intcode
         self[out] = p1 * p2
         @ptr += 4
       when 3
-        inp = get_inp
+        if block_given?
+          inp = yield(:in)
+        else
+          inp = get_inp
+        end
         self[out] = inp
         puts "Input: #{inp}" if @verbose
+        break if inp.nil?
         @ptr += 2
       when 4
         @output = p1
         @ptr += 2
         puts "Output: #{@output}" if @verbose
+        yield(:out, @output) if block_given?
         break if @loop_mode
       when 5
         @ptr = p1 != 0 ? p2 : @ptr + 3
