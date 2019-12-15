@@ -1,5 +1,4 @@
 require '../intcode/intcode'
-require './astar'
 
 input = File.read("input").split(",").map(&:to_i)
 
@@ -106,15 +105,6 @@ class ShipSection
   end
 
   def [](x, y)
-    if y == -1
-      @items.unshift(nil)
-      y = 0
-    end
-    if x == -1
-      @items.each{ |r| r.unshift(nil) unless r.nil? }
-      x = 0
-    end
-
     @items[y] ||= []
     @items[y][x] = ShipSectionItem.new(x,y) if @items[y][x].nil?
     @items[y][x]
