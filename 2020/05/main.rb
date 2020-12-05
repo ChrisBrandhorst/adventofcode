@@ -1,15 +1,9 @@
 def get_row(bp)
-  parts = (0..6).map do |i|
-    2 ** (6-i) * (bp[i] == 'F' ? 0 : 1)
-  end
-  parts.sum
+  (0..6).map{ |i| 2 ** (6-i) * bp[i] }.sum
 end
 
 def get_col(bp)
-  parts = (7..9).map do |i|
-    2 ** (9-i) * (bp[i] == 'L' ? 0 : 1)
-  end
-  parts.sum
+  (7..9).map{ |i| 2 ** (9-i) * bp[i] }.sum
 end
 
 def get_id(bp)
@@ -18,8 +12,11 @@ end
 
 start = Time.now
 input = File.readlines("input", chomp: true)
-  .map(&:chars)
-  .map{ |bp| get_id(bp) }
+  .map{ |bp|
+    get_id(
+      bp.chars.map{ |c| ['F', 'L'].include?(c) ? 0 : 1 }
+    )
+  }
   .sort
 puts "Prep: #{Time.now - start}s"
 
