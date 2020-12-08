@@ -10,10 +10,10 @@ def run(input, nil_if_stuck, toggle_i = nil)
   ops, pos, acc = input.clone, 0, 0
 
   while i = ops[pos]
+    ops[pos] = nil
     toggle_op = i == toggle_i ? "nop" : "jmp"
     pos += i.first == toggle_op ? i.last : 1
     acc += i.last if i.first == "acc"
-    ops[pos] = nil
   end
 
   pos < ops.size && nil_if_stuck ? nil : acc
