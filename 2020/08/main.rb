@@ -1,8 +1,8 @@
-INSTR_MATCH = /^(\w{3}) ([-+]\d+)$/
+INSTR_FORMAT = /^(\w{3}) ([-+]\d+)$/
 
 start = Time.now
 input = File.readlines("input")
-  .map{ |i| i.match(INSTR_MATCH).captures }
+  .map{ |i| i.match(INSTR_FORMAT).captures }
   .each{ |i| i[1] = i[1].to_i }
 puts "Prep: #{Time.now - start}s"
 
@@ -10,10 +10,10 @@ def run(input, nil_if_stuck, toggle_i = nil)
   ops, pos, acc = input.clone, 0, 0
 
   while i = ops[pos]
-    ops[pos] = nil
     toggle_op = i == toggle_i ? "nop" : "jmp"
     pos += i.first == toggle_op ? i.last : 1
     acc += i.last if i.first == "acc"
+    ops[pos] = nil
   end
 
   pos < ops.size && nil_if_stuck ? nil : acc
