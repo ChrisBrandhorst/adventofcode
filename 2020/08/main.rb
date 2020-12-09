@@ -1,11 +1,5 @@
 INSTR_FORMAT = /^(\w{3}) ([-+]\d+)$/
 
-start = Time.now
-input = File.readlines("input")
-  .map{ |i| i.match(INSTR_FORMAT).captures }
-  .each{ |i| i[1] = i[1].to_i }
-puts "Prep: #{Time.now - start}s"
-
 def run(input, nil_if_stuck, toggle_i = nil)
   ops, pos, acc = input.clone, 0, 0
 
@@ -18,6 +12,12 @@ def run(input, nil_if_stuck, toggle_i = nil)
 
   pos < ops.size && nil_if_stuck ? nil : acc
 end
+
+start = Time.now
+input = File.readlines("input")
+  .map{ |i| i.match(INSTR_FORMAT).captures }
+  .each{ |i| i[1] = i[1].to_i }
+puts "Prep: #{Time.now - start}s"
 
 start = Time.now
 part1 = run(input, false)

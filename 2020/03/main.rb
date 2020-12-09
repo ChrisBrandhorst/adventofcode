@@ -1,7 +1,3 @@
-start = Time.now
-input = File.readlines("input", chomp: true).map(&:chars)
-puts "Prep: #{Time.now - start}s"
-
 def get_slope(grid, x, y)
   grid[y] ? grid[y][x % grid[0].size] : nil
 end
@@ -17,6 +13,10 @@ def get_route(grid, dx, dy)
   end
   route
 end
+
+start = Time.now
+input = File.readlines("input", chomp: true).map(&:chars)
+puts "Prep: #{Time.now - start}s"
 
 start = Time.now
 part1 = get_route(input, 3, 1).count('#')
