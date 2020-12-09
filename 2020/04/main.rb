@@ -1,13 +1,3 @@
-start = Time.now
-input = File.read("input")
-  .split("\n\n")
-  .map{ |b|
-    b.split(/\s/)
-      .map{ |p| p.split(":") }
-      .to_h.transform_keys(&:to_sym)
-  }
-puts "Prep: #{Time.now - start}s"
-
 def is_valid_1(pp)
   pp.keys.size == 8 ||
   (pp.keys.size == 7 && pp[:cid].nil?)
@@ -26,6 +16,16 @@ def is_valid_2(pp)
   pp[:ecl].match?(/^(amb|blu|brn|gry|grn|hzl|oth)$/) &&
   pp[:pid].match?(/^\d{9}$/)
 end
+
+start = Time.now
+input = File.read("input")
+  .split("\n\n")
+  .map{ |b|
+    b.split(/\s/)
+      .map{ |p| p.split(":") }
+      .to_h.transform_keys(&:to_sym)
+  }
+puts "Prep: #{Time.now - start}s"
 
 start = Time.now
 part1 = input.count{ |p| is_valid_1(p) }
