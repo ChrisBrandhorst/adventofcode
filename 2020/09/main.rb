@@ -12,7 +12,7 @@ input = File.readlines("input").map(&:to_i)
 puts "Prep: #{Time.now - start}s"
 
 start = Time.now
-part1 = input.find.with_index{ |n,i| i >= PREAMBLE && !input[i-PREAMBLE..i-1].combination(2).find{ |c| c.sum == n } }
+part1 = input.find.with_index{ |n,i| i >= PREAMBLE && !input[i-PREAMBLE..i-1].combination(2).any?{ |c| c.sum == n } }
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 start = Time.now
