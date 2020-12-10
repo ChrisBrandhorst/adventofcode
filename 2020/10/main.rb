@@ -14,9 +14,17 @@ diffs = input.each_cons(2).map{ |a| a.last - a.first }
 part1 = diffs.count(1) * diffs.count(3)
 puts "Part 1: #{part1} (#{Time.now - start1}s)"
 
-start2 = Time.now
+start2a = Time.now
 graph = input.each_with_index.inject({}){ |g,(a,i)| g[a] = input[i+1,3].select{ |b| b - a <= 3 }; g }
-part2 = get_path_count(graph, input.first, input.last)
-puts "Part 2: #{part2} (#{Time.now - start2}s)"
+part2a = get_path_count(graph, input.first, input.last)
+part2a_time = Time.now - start2a
+puts "Part 2: #{part2a} (recursive, #{part2a_time}s)"
+
+start2b = Time.now
+hist = []
+graph.reverse_each{ |k,v| v.each{ |i| hist[k] = (hist[k] || 0) + (hist[i] || 1) } }
+part2b = hist.first
+part2b_time = Time.now - start2b
+puts "Part 2: #{part2b} (non-recursive, #{part2b_time}s, #{(part2a_time / part2b_time).round(2)}x faster)"
 
 puts "Total:  #{Time.now - start}s"
