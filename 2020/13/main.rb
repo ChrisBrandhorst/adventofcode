@@ -9,16 +9,16 @@ def inv(n, mod)
 end
 
 # Find t such that
-# for each bus
-# t ≡ Ib (mod Mb)
-# Where Ib = Bus offset (remainder)
-# ANd Mb = Bus ID
+#   for each bus
+#   t ≡ Ib (mod Mb)
+#   where Ib = Bus offset (remainder)
+#   and Mb = Bus ID
 # https://crypto.stanford.edu/pbc/notes/numbertheory/crt.html
 def chin_rem(moduli, remainders)
   prod = moduli.inject(:*)
   remainders
     .zip(moduli)
-    .map{ |a,m| (a * prod / m) * inv(prod / m, m) }
+    .map{ |a,m| a * prod / m * inv(prod / m, m) }
     .inject(:+) % prod
 end
 
@@ -41,7 +41,6 @@ lines.each_with_index do |l,i|
   offsets << -i
 end
 part2 = chin_rem(ids, offsets)
-
 puts "Part 2: #{part2} (#{Time.now - start2}s)"
 
 puts "Total:  #{Time.now - start}s"
