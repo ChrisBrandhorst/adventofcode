@@ -11,7 +11,12 @@ class Grid
   end
 
   def get(x, y)
-    y < 0 || x < 0 ? nil : (@grid[y] || [])[x]
+    # y < 0 || x < 0 ? nil : (@grid[y] || [])[x]
+    if y < 0 || x < 0
+      nil
+    else
+      @grid[y] ? @grid[y][x] : nil
+    end
   end
   alias_method :[], :get
 
@@ -73,12 +78,12 @@ class SeatLayout < Grid
     @changed = false
 
     new_grid = []
-    (0..@grid.size-1).each do |y|
-      (0..@grid[y].size-1).each do |x|
-        new_grid[y] ||= []
+    (0...@grid.size).each do |y|
+      new_grid[y] = []
+      (0...@grid[y].size).each do |x|
         n = evolve_seat(x, y)
         new_grid[y][x] = n
-        @changed = true if get(x, y) != n
+        @changed = true if !@changed && get(x, y) != n
       end
     end
 
