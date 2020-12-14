@@ -1,6 +1,9 @@
 MASK_MATCH = /mask = ([X01]+)/
 WRITE_MATCH = /mem\[(\d+)\] = (\d+)/
 
+ZERO = '0'
+X = 'X'
+
 def processor(input)
   mem, mask = {}, nil
   input.each do |op|
@@ -20,18 +23,18 @@ puts "Prep:   #{Time.now - start}s"
 
 start1 = Time.now
 part1 = processor(input) do |mem, mask, addr, val|
-  mem[addr] = val.to_s(2).rjust(36, "0")
-    .chars.map.with_index{ |c,i| mask[i] == 'X' ? c : mask[i] }
-    .join('').to_i(2)
+  val = val.to_s(2).rjust(36, ZERO)
+  mask.chars.each_with_index{ |c,i| val[i] = c unless c == X }
+  mem[addr] = val.to_i(2)
 end
 puts "Part 1: #{part1} (#{Time.now - start1}s)"
 
 start2 = Time.now
 part2 = processor(input) do |mem, mask, addr, val|
-  addr = addr.to_s(2).rjust(36, "0")
-  mask.chars.each_with_index{ |c,i| addr[i] = c unless c == '0' }
-  floats = (0...addr.length).find_all{ |i| addr[i] == 'X' }
-  addrs = [0,1].repeated_permutation(addr.count('X')).map do |f|
+  addr = addr.to_s(2).rjust(36, ZERO)
+  mask.chars.each_with_index{ |c,i| addr[i] = c unless c == ZERO }
+  floats = (0...addr.length).find_all{ |i| addr[i] == X }
+  addrs = [0,1].repeated_permutation(addr.count(X)).map do |f|
     a = addr.clone
     floats.each_with_index{ |j,i| a[j] = f[i].to_s }
     a.to_i(2)
