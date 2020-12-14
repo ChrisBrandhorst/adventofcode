@@ -31,25 +31,13 @@ part2 = processor(input) do |mem, mask, addr, val|
   addr = addr.to_s(2).rjust(36, "0")
   mask.chars.each_with_index{ |c,i| addr[i] = c unless c == '0' }
   floats = (0...addr.length).find_all{ |i| addr[i] == 'X' }
-  [0,1].repeated_permutation(addr.count('X')).map{ |f|
+  addrs = [0,1].repeated_permutation(addr.count('X')).map do |f|
     a = addr.clone
     floats.each_with_index{ |j,i| a[j] = f[i].to_s }
     a.to_i(2)
-  }.each{ |a| mem[a] = val }
+  end
+  addrs.each{ |a| mem[a] = val }
 end
 puts "Part 2: #{part2} (#{Time.now - start2}s)"
 
 puts "Total:  #{Time.now - start}s"
-
-
-
-
-
-
-
-
-
-
-
-
-
