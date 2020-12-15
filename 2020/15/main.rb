@@ -39,7 +39,6 @@ until count == 30000000
     last = nl
   end
   count += 1
-  puts count if count % 100000 == 0
 end
 
 part2 = last
