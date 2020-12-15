@@ -11,14 +11,12 @@ until spoken.size == 2020
 
   if count == 1
     spoken << 0
-    # puts "#{spoken.size}: 0"
   else
     spoken[spoken.size-1] = -1
     ri = spoken.rindex(last)
     spoken[spoken.size-1] = last
     nl = (spoken.size) - (ri + 1)
     spoken << nl
-    # puts "#{spoken.size}: #{nl}"
   end
 end
 
@@ -45,10 +43,6 @@ until count == 30000000
 end
 
 part2 = last
-
-p spoken.values.map{|a|a.size}
-
-
 puts "Part 2: #{part2} (#{Time.now - start2}s)"
 
 puts "Total:  #{Time.now - start}s"
