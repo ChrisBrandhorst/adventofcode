@@ -1,5 +1,5 @@
-MASK_MATCH = /mask = ([X01]+)/
-WRITE_MATCH = /mem\[(\d+)\] = (\d+)/
+MASK_MATCH = /^mask = ([X01]+)$/
+WRITE_MATCH = /^mem\[(\d+)\] = (\d+)$/
 
 ZERO = '0'
 X = 'X'
