@@ -4,14 +4,13 @@ puts "Prep:   #{Time.now - start}s"
 
 def run(input, target)
   seq = input.map.with_index{ |a,i| [a,[i]] }.to_h
-  size = seq.keys.size
   last = input.last
 
-  until size == target
+  input.size.step do |size|
+    break if size == target
     turns = seq[last]
     last = turns.size == 1 ? 0 : size - turns[-2] - 1
     (seq[last] ||= []) << size
-    size += 1
   end
 
   last
