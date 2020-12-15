@@ -2,46 +2,27 @@ start = Time.now
 input = File.read("input").split(',').map(&:to_i)
 puts "Prep:   #{Time.now - start}s"
 
-start1 = Time.now
-spoken = [] | input
+def run(input, target)
+  seq = input.map.with_index{ |a,i| [a,[i]] }.to_h
+  size = seq.keys.size
+  last = input.last
 
-until spoken.size == 2020
-  last = spoken.last
-  count = spoken.count(last)
-
-  if count == 1
-    spoken << 0
-  else
-    spoken[spoken.size-1] = -1
-    ri = spoken.rindex(last)
-    spoken[spoken.size-1] = last
-    nl = (spoken.size) - (ri + 1)
-    spoken << nl
+  until size == target
+    turns = seq[last]
+    last = turns.size == 1 ? 0 : size - turns[-2] - 1
+    (seq[last] ||= []) << size
+    size += 1
   end
+
+  last
 end
 
-part1 = spoken.last
+start1 = Time.now
+part1 = run(input, 2020)
 puts "Part 1: #{part1} (#{Time.now - start1}s)"
 
 start2 = Time.now
-
-spoken = input.map.with_index{ |a,i| [a,[i]] }.to_h
-count = spoken.keys.size
-last = input.last
-
-until count == 30000000
-  if spoken[last] && spoken[last].size == 1
-    (spoken[0] ||= []) << count
-    last = 0
-  else
-    nl = count - spoken[last][-2] + 1
-    (spoken[nl] ||= []) << count
-    last = nl
-  end
-  count += 1
-end
-
-part2 = last
+part2 = run(input, 30000000)
 puts "Part 2: #{part2} (#{Time.now - start2}s)"
 
 puts "Total:  #{Time.now - start}s"
