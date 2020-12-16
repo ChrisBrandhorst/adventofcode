@@ -1,35 +1,34 @@
 start = Time.now
-input = File.read("input").split("\n\n")
+input = File.read("input").split("\n\n").map{ |b| b.split("\n") }
 
-fields = input.shift.split("\n").map{ |f| [
+fields = input.shift.map{ |f| [
   f[0...f.index(':')],
   f.scan(/(\d+)-(\d+)/).map{ |a| (a.first.to_i..a.last.to_i) }
 ] }.to_h
-your = input.shift.split("\n").last.split(",").map(&:to_i)
-nearby = input.shift.split("\n").drop(1).map{ |n| n.split(",").map(&:to_i) }
+your = input.shift.last.split(",").map(&:to_i)
+nearby = input.shift.drop(1).map{ |n| n.split(",").map(&:to_i) }
 
 ranges = fields.values.flatten(1)
 puts "Prep:   #{Time.now - start}s"
 
 start1 = Time.now
-part1 = nearby.flatten.sum{ |v| ranges.any?{ |r| r === v } ? 0 : v }
+part1 = nearby.flatten.reject{ |v| ranges.any?{ |r| r === v } }.sum
 puts "Part 1: #{part1} (#{Time.now - start1}s)"
 
 start2 = Time.now
 
-# Get all tickets for which all values match any range
+# Get all nearby tickets for which all values match any range
 valid = nearby.select{ |n| n.all?{ |v| ranges.any?{ |r| r === v } } }
 
 # Get all possible fields for all positions
-poss = (0...your.size).map{ |i|
-  valid
-    .map{ |v| v[i] }
+poss = valid.transpose.map{ |vs|
+  vs
     .map{ |v|
       fields.keys.select{ |k|
         fields[k].any?{ |r| r === v }
       }
     }
-    .reduce(&:&)
+    .reduce(&:&) 
 }
 
 # Reduce positions by repeatedly fixating fields with only one option
