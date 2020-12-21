@@ -8,20 +8,17 @@ puts "Prep:   #{Time.now - start}s"
 start1 = Time.now
 
 # Make allergens to ingredients hash
+# Use intersection, so we already remove some possibilities
 all_to_ing = {}
 input.each do |is,as|
-  as.each do |a|
-    # Use intersection, so we already remove some possibilities
-    all_to_ing[a] = all_to_ing.has_key?(a) ? all_to_ing[a] & is : is
-  end
+  as.each{ |a| all_to_ing[a] = all_to_ing.has_key?(a) ? all_to_ing[a] & is : is }
 end
 
-# While there are allergens with uncertain ingredients
-while all_to_ing.values.any?{ |is| is.size != 1 } do
-  # Select all allergens with a known ingredient
-  all_to_ing.select{ |a,is| is.size == 1 }.each do |ka,(ki)|
-    # Remove that ingredient from all lines, as a new object 'cause we're iterating over it
-    all_to_ing = all_to_ing.map{ |asn,isn| [ asn, asn == ka ? isn : isn - [ki] ] }.to_h
+# While there are allergens for which we do not know the ingredient
+# Remove the known ingredients from all lines, as a new object 'cause we're iterating over it
+while (knows = all_to_ing.select{ |a,is| is.size == 1 }).size != all_to_ing.values.size do
+  all_to_ing = knows.inject(all_to_ing) do |ati,(ka,(ki))|
+    ati.map{ |asn,isn| [ asn, asn == ka ? isn : isn - [ki] ] }.to_h
   end
 end
 
