@@ -4,16 +4,7 @@ start = Time.now
 input = File.read("input").split("\n\n").map{ |d| d.split("\n").drop(1).map(&:to_i) }
 puts "Prep:   #{Time.now - start}s"
 
-def combat!(decks)
-  until decks.any?(&:empty?)
-    tops = decks.map(&:shift)
-    winner = tops.index(tops.max)
-    decks[winner] += winner == 0 ? tops : tops.reverse
-  end
-  winner
-end
-
-def recursive_combat!(decks)
+def combat!(decks, recursive = false)
   game_hist = Set.new
 
   until decks.any?(&:empty?)
@@ -21,8 +12,8 @@ def recursive_combat!(decks)
     game_hist << decks.map(&:dup)
 
     tops = decks.map(&:shift)
-    winner = decks.zip(tops).all?{ |d,t| d.size >= t} ?
-      recursive_combat!( decks.map.with_index{ |d,i| d.take(tops[i]) } ) :
+    winner = recursive && decks.zip(tops).all?{ |d,t| d.size >= t} ?
+      combat!( decks.map.with_index{ |d,i| d.take(tops[i]) } ) : # Apparently, the player with the highest card always wins in sub-games, so sub-sub-games can be skipped
       tops.index(tops.max)
 
     decks[winner] += winner == 0 ? tops : tops.reverse
@@ -42,7 +33,7 @@ puts "Part 1: #{part1} (#{Time.now - start1}s)"
 
 start2 = Time.now
 decks = input.map(&:clone)
-recursive_combat!(decks)
+combat!(decks, true)
 part2 = score(decks)
 puts "Part 2: #{part2} (#{Time.now - start2}s)"
 
