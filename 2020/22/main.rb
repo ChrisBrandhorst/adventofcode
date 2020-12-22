@@ -1,14 +1,14 @@
 require 'set'
 
 start = Time.now
-input = File.read("input").split("\n\n").map{ |p| p.split("\n").drop(1).map(&:to_i) }
+input = File.read("input").split("\n\n").map{ |d| d.split("\n").drop(1).map(&:to_i) }
 puts "Prep:   #{Time.now - start}s"
 
 def combat!(decks)
   until decks.any?(&:empty?)
     tops = decks.map(&:shift)
     winner = tops.index(tops.max)
-    decks[winner].push(tops[winner], tops[1 - winner])
+    decks[winner] += winner == 0 ? tops : tops.reverse
   end
   winner
 end
@@ -16,7 +16,7 @@ end
 def recursive_combat!(decks)
   game_hist = Set.new
 
-  until decks.any?{ |d| d.empty? }
+  until decks.any?(&:empty?)
     return 0 if game_hist.include?(decks)
     game_hist << decks.map(&:dup)
 
