@@ -1,69 +1,44 @@
-PRV = 0
-NXT = 1
-
-class Cup
-  attr_reader :label
-  attr_accessor :nxt
-
-  def initialize(label)
-    @label = label
-  end
-
-  def place_after(other)
-    other.nxt = self
-  end
-end
-
 def game(circle, length = 100)
   do_prt = length > 100000
   min, max = circle.min, circle.max
 
-  # Build hash of cups with nexts
-  cups = circle.each_with_index.inject({}) do |cups,(l,i)|
-    pl = circle[i - 1]
-    nl = circle[i + 1] || circle.first
-    cup = cups[l] ||= Cup.new(l)
-    cup.nxt = cups[nl] ||= Cup.new(nl)
-    cups
+  next_cups = circle.each_with_index.inject({}) do |nc,(l,i)|
+    nc[l] = circle[i + 1] || circle[0]
+    nc
   end
 
-  cur = cups[circle.first]
+  cur = circle.first
   length.times do |i|
     print "." if do_prt && i % 100000 == 0
-
-    # Get picks and labels
-    pick_first, pick_last = cur.nxt, cur.nxt.nxt.nxt
-    pick_labels = [
-      pick_first.label,
-      pick_first.nxt.label,
-      pick_last.label
-    ]
+    
+    # Get picks
+    a = next_cups[cur]
+    b = next_cups[a]
+    c = next_cups[b]
 
     # Find destination
-    dst_label = cur.label - 1
-    while dst_label < min || pick_labels.include?(dst_label)
-      dst_label = dst_label - 1 < min ? max : dst_label - 1
+    dst = cur - 1
+    while dst < min || [a,b,c].include?(dst)
+      dst = dst - 1 < min ? max : dst - 1
     end
-    dst = cups[dst_label]
 
     # Remove picks from circle
-    pick_last.nxt.place_after(cur)
+    next_cups[cur] = next_cups[c]
 
     # Add pick back to circle
-    aft_dst = dst.nxt
-    pick_first.place_after(dst)
-    aft_dst.place_after(pick_last)
+    next_cups[c] = next_cups[dst]
+    next_cups[dst] = a
 
     # Go next
-    cur = cur.nxt
+    cur = next_cups[cur]
   end
 
   print " Done\n" if do_prt
-  cups
+  next_cups
 end
 
-def order(cups)
-  (cups.count-1).times.inject([ cups[1] ]){ |o| o << o.last.nxt }
+def order(next_cups)
+  (next_cups.count - 1).times.inject([1]){ |o| o << next_cups[o.last] }
 end
 
 start = Time.now
@@ -72,14 +47,13 @@ puts "Prep:   #{Time.now - start}s"
 
 start1 = Time.now
 result = game(input.dup)
-part1 = order(result).drop(1).map(&:label).join('')
+part1 = order(result).drop(1).join('')
 puts "Part 1: #{part1} (#{Time.now - start1}s)"
 
 start2 = Time.now
 circle = input.dup | (input.max+1..1000000).to_a
 result = game(circle, 10000000)
-n1 = result[1].nxt
-part2 = n1.label * n1.nxt.label
+part2 = result[1] * result[result[1]]
 puts "Part 2: #{part2} (#{Time.now - start2}s)"
 
 puts "Total:  #{Time.now - start}s"
