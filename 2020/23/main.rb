@@ -3,14 +3,13 @@ NXT = 1
 
 class Cup
   attr_reader :label
-  attr_accessor :prv, :nxt
+  attr_accessor :nxt
 
   def initialize(label)
     @label = label
   end
 
   def place_after(other)
-    @prv = other
     other.nxt = self
   end
 end
@@ -19,12 +18,11 @@ def game(circle, length = 100)
   do_prt = length > 100000
   min, max = circle.min, circle.max
 
-  # Build hash of cups with neighbours
+  # Build hash of cups with nexts
   cups = circle.each_with_index.inject({}) do |cups,(l,i)|
     pl = circle[i - 1]
     nl = circle[i + 1] || circle.first
     cup = cups[l] ||= Cup.new(l)
-    cup.prv = cups[pl] ||= Cup.new(pl)
     cup.nxt = cups[nl] ||= Cup.new(nl)
     cups
   end
@@ -43,7 +41,7 @@ def game(circle, length = 100)
 
     # Find destination
     dst_label = cur.label - 1
-    until dst_label >= min && !pick_labels.include?(dst_label)
+    while dst_label < min || pick_labels.include?(dst_label)
       dst_label = dst_label - 1 < min ? max : dst_label - 1
     end
     dst = cups[dst_label]
