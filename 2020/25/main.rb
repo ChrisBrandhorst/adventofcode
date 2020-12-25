@@ -2,20 +2,16 @@ start = Time.now
 card_pk, door_pk = File.readlines("input").map{ |l| l.to_i }
 puts "Prep:   #{Time.now - start}s"
 
-def step(res, sub)
-  res * sub % 20201227
+def step(r, sub)
+  r * sub % 20201227
 end
 
 def find_loop_size(sub, pk)
-  res = 1
-  1.step do |ls|
-    res = step(res, sub)
-    return ls if res == pk
-  end
+  0.step.inject(1){ |r,i| break i if r == pk; step(r, sub) }
 end
 
 def transform(sub, ls)
-  ls.times.inject(1){ |r| r = step(r, sub) }
+  ls.times.inject(1){ |r| step(r, sub) }
 end
 
 start1 = Time.now
