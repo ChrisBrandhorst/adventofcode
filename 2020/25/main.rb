@@ -15,9 +15,7 @@ def find_loop_size(sub, pk)
 end
 
 def transform(sub, ls)
-  res = 1
-  ls.times{ res = step(res || 1, sub) }
-  res
+  ls.times.inject(1){ |r| r = step(r, sub) }
 end
 
 start1 = Time.now
