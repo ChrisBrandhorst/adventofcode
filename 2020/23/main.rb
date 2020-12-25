@@ -1,13 +1,12 @@
 def game(circle, length = 100)
   do_prt = length > 100000
-  min, max = circle.min, circle.max
+  cur, min, max = circle.first, circle.min, circle.max
 
   next_cups = circle.each_with_index.inject({}) do |nc,(l,i)|
     nc[l] = circle[i + 1] || circle[0]
     nc
   end
 
-  cur = circle.first
   length.times do |i|
     print "." if do_prt && i % 100000 == 0
     
