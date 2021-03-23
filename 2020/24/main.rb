@@ -39,14 +39,14 @@ puts "Part 1: #{part1} (#{Time.now - start1}s)"
 
 
 def neighbours(tiles, x, y)
-  {
-    [x + 1, y] => tiles[[x + 1, y]] || WHITE,
-    [x + 1, y - 1] => tiles[[x + 1, y - 1]] || WHITE,
-    [x, y - 1] => tiles[[x, y - 1]] || WHITE,
-    [x - 1, y] => tiles[[x - 1, y]] || WHITE,
-    [x - 1, y + 1] => tiles[[x - 1, y + 1]] || WHITE,
-    [x, y + 1] => tiles[[x, y + 1]] || WHITE
-  }
+  [
+    [x + 1, y    ],
+    [x + 1, y - 1],
+    [x,     y - 1],
+    [x - 1, y    ],
+    [x - 1, y + 1],
+    [x,     y + 1]
+  ].inject({}){ |n, c| n[c] = tiles[c] || WHITE; n }
 end
 
 
@@ -55,7 +55,7 @@ start2 = Time.now
 100.times do |i|
 
   all_ns = {}
-  all_adj = tiles.inject({}) do |aa, (c,t)|
+  all_adj = tiles.inject({}) do |aa,(c,t)|
     aa[c] = t
     ns = neighbours(tiles, *c)
     all_ns[c] = ns
