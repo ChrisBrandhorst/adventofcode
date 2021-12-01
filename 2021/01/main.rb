@@ -3,7 +3,7 @@ input = File.readlines("input", chomp: true).map(&:to_i)
 puts "Prep: #{Time.now - start}s"
 
 def count_larger(inp)
-  inp.each_cons(2).map{ |a,b| b > a }.count(true)
+  inp.each_cons(2).count{ |a,b| b > a }
 end
 
 start = Time.now
