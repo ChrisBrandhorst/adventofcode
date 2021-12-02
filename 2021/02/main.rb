@@ -1,3 +1,7 @@
+FORWARD = 'forward'
+DOWN = 'down'
+UP = 'up'
+
 start = Time.now
 input = File.readlines("input", chomp: true)
   .map{ |l|
@@ -13,11 +17,11 @@ start = Time.now
 pos, depth = 0, 0
 input.each do |op,x|
   case op
-  when 'forward'
+  when FORWARD
     pos += x
-  when 'down'
+  when DOWN
     depth += x
-  when 'up'
+  when UP
     depth -= x
   end
 end
@@ -31,12 +35,12 @@ start = Time.now
 pos, depth, aim = 0, 0, 0
 input.each do |op,x|
   case op
-  when 'forward'
+  when FORWARD
     pos += x
     depth += aim * x
-  when 'down'
+  when DOWN
     aim += x
-  when 'up'
+  when UP
     aim -= x
   end
 end
