@@ -1,7 +1,3 @@
-FORWARD = 'forward'
-DOWN = 'down'
-UP = 'up'
-
 start = Time.now
 input = File.readlines("input", chomp: true)
   .map{ |l|
@@ -12,38 +8,27 @@ input = File.readlines("input", chomp: true)
 puts "Prep: #{Time.now - start}s"
 
 
-start = Time.now
-
-pos, depth = 0, 0
-input.each do |op,x|
-  case op
-  when FORWARD
-    pos += x
-  when DOWN
-    depth += x
-  when UP
-    depth -= x
+def calc(inp, part2 = false)
+  pos, b, c = 0, 0, 0
+  inp.each do |op,x|
+    case op
+    when 'forward'
+      pos += x
+      c += b * x
+    when 'down'
+      b += x
+    when 'up'
+      b -= x
+    end
   end
+  pos * (part2 ? c : b)
 end
 
-part1 = pos * depth
+start = Time.now
+part1 = calc(input)
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
 start = Time.now
-
-pos, depth, aim = 0, 0, 0
-input.each do |op,x|
-  case op
-  when FORWARD
-    pos += x
-    depth += aim * x
-  when DOWN
-    aim += x
-  when UP
-    aim -= x
-  end
-end
-
-part2 = pos * depth
+part2 = calc(input, true)
 puts "Part 2: #{part2} (#{Time.now - start}s)"
