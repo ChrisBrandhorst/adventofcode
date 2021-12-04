@@ -1,5 +1,7 @@
 require 'matrix'
 
+BOARD_SIZE = 5
+
 class Board < Matrix
 
   attr_reader :final_score
@@ -7,6 +9,10 @@ class Board < Matrix
   def initialize(a,b)
     super(a,b)
     @markers = Matrix.zero(self.row_size) * 1
+  end
+
+  def has_bingo?
+    !@final_score.nil?
   end
 
   def mark_no(no)
@@ -26,54 +32,27 @@ class Board < Matrix
   def sum_unmarked
     self.each_with_index.map{ |v,r,c| @markers[r,c] == 1 ? 0 : v }.sum
   end
-
-  def has_bingo?
-    !@final_score.nil?
-  end
-
 end
+
 
 start = Time.now
 input = File.readlines("input", chomp: true).filter{ |l| l != "" }
+draws = input.first.split(',').map(&:to_i)
+boards = input[1..-1].each_slice(BOARD_SIZE).map{ |b| b.map{ |i| i.split(' ').map(&:to_i) } }.map{ |bd| Board.rows(bd) }
 puts "Prep: #{Time.now - start}s"
 
-
-def init(inp)
-  [
-    inp.first.split(',').map(&:to_i),
-    inp[1..-1].each_slice(5).map{ |b| b.map{ |i| i.split(' ').map(&:to_i) } }.map{ |bd| Board.rows(bd) }
-  ]
-end
-
 start = Time.now
-draws, boards = init(input)
-
-first_board = nil
-while draws.any? && first_board.nil?
+winners = []
+while draws.any?
   draw = draws.shift
-  boards.each do |b|
-    if b.mark_no(draw)
-      first_board = b
-      break
-    end
+  boards.reject(&:has_bingo?).each do |b|
+    winners << b if b.mark_no(draw)
   end
 end
-
-part1 = first_board.final_score
+part1 = winners.first.final_score
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
 start = Time.now
-draws, boards = init(input)
-
-last_board = nil
-while draws.any?
-  draw = draws.shift
-  boards.each do |b|
-    last_board = b if b.mark_no(draw)
-  end
-  boards = boards.reject(&:has_bingo?)
-end
-
-part2 = last_board.final_score
+part2 = winners.last.final_score
 puts "Part 2: #{part2} (#{Time.now - start}s)"

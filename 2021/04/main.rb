@@ -1,14 +1,4 @@
-start = Time.now
-input = File.readlines("input", chomp: true).filter{ |l| l != "" }
 BOARD_SIZE = 5
-puts "Prep: #{Time.now - start}s"
-
-def init(inp)
-  [
-    inp.first.split(',').map(&:to_i),
-    inp[1..-1].each_slice(5).map{ |b| b.map{ |i| i.split(' ').map(&:to_i) } }.map{ |b| Board.new(b) }
-  ]
-end
 
 class Board
 
@@ -41,39 +31,27 @@ class Board
   def sum_unmarked
     @data.each_with_index.map{ |d,i| @markers[i] ? 0 : d }.sum
   end
-
 end
 
 
 start = Time.now
-draws, boards = init(input)
+input = File.readlines("input", chomp: true).filter{ |l| l != "" }
+draws = input.first.split(',').map(&:to_i)
+boards = input[1..-1].each_slice(BOARD_SIZE).map{ |b| b.map{ |i| i.split(' ').map(&:to_i) } }.map{ |b| Board.new(b) }
+puts "Prep: #{Time.now - start}s"
 
-first_board = nil
-while draws.any? && first_board.nil?
+start = Time.now
+winners = []
+while draws.any?
   draw = draws.shift
-  boards.each do |b|
-    if b.mark_no(draw)
-      first_board = b
-      break
-    end
+  boards.reject(&:has_bingo?).each do |b|
+    winners << b if b.mark_no(draw)
   end
 end
-
-part1 = first_board.final_score
+part1 = winners.first.final_score
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
 start = Time.now
-draws, boards = init(input)
-
-last_board = nil
-while draws.any?
-  draw = draws.shift
-  boards.each do |b|
-    last_board = b if b.mark_no(draw)
-  end
-  boards = boards.reject(&:has_bingo?)
-end
-
-part2 = last_board.final_score
+part2 = winners.last.final_score
 puts "Part 2: #{part2} (#{Time.now - start}s)"
