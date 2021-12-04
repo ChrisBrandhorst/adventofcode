@@ -1,5 +1,6 @@
 start = Time.now
 input = File.readlines("input", chomp: true).filter{ |l| l != "" }
+BOARD_SIZE = 5
 puts "Prep: #{Time.now - start}s"
 
 def init(inp)
@@ -27,10 +28,10 @@ class Board
     return false if i.nil?
 
     @markers[i] = true
-    row = i / 5
-    col = i % 5
-    has_row = @markers[(row*5)..(row*5+5-1)].all?(true)
-    has_col = @markers.select.with_index{ |_,j| (j - col) % 5 == 0 }.all?(true)
+    row = i / BOARD_SIZE
+    col = i % BOARD_SIZE
+    has_row = @markers[row*BOARD_SIZE..(row+1)*BOARD_SIZE-1].all?
+    has_col = @markers.select.with_index{ |_,j| (j - col) % BOARD_SIZE == 0 }.all?
 
     bingo = has_row || has_col
     @final_score = (sum_unmarked * no) if bingo
