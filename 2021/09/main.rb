@@ -7,7 +7,7 @@ grid = Grid.new(input)
 puts "Prep: #{Time.now - start}s"
 
 start = Time.now
-part1 = grid.inject([]){ |l,c,v| l << v + 1 if grid.adj(c).all?{ |a| v < a }; l }.sum
+part1 = grid.inject(0){ |r,c,v| r + (grid.adj(c).all?{ |a| v < a } ? v + 1 : 0) }
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 start = Time.now
