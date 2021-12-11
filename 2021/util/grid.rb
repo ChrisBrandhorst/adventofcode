@@ -6,6 +6,11 @@ class Grid
     @rows = rows
     @row_count = @rows.size
     @col_count = @rows.first.size
+    @with_diag = false
+  end
+
+  def with_diag!
+    @with_diag = true
   end
 
   def row(y)
@@ -18,7 +23,7 @@ class Grid
   end
 
   def []=(x, y = nil, v)
-    x, y = *x if x.is_a?(Array)
+    x, y, v = *x, v if x.is_a?(Array)
     @rows[y][x] = v
   end
 
@@ -42,22 +47,44 @@ class Grid
 
   def adj(x, y = nil)
     x, y = *x if x.is_a?(Array)
-    [
+    ad = [
       self[x-1,y],
       self[x+1,y],
       self[x,y-1],
       self[x,y+1]
-    ].compact
+    ]
+
+    if @with_diag
+      ad += [
+        self[x-1,y-1],
+        self[x+1,y-1],
+        self[x+1,y+1],
+        self[x-1,y+1]
+      ]
+    end
+
+    ad.compact
   end
 
   def adj_coords(x, y = nil)
     x, y = *x if x.is_a?(Array)
-    [
+    ad = [
       self[x-1,y] ? [x-1,y] : nil,
       self[x+1,y] ? [x+1,y] : nil,
       self[x,y-1] ? [x,y-1] : nil,
       self[x,y+1] ? [x,y+1] : nil
-    ].compact
+    ]
+
+    if @with_diag
+      ad += [
+        self[x-1,y-1] ? [x-1,y-1] : nil,
+        self[x+1,y-1] ? [x+1,y-1] : nil,
+        self[x+1,y+1] ? [x+1,y+1] : nil,
+        self[x-1,y+1] ? [x-1,y+1] : nil
+      ]
+    end
+
+    ad.compact
   end
 
   def flatten
