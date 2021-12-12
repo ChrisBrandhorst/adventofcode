@@ -19,7 +19,7 @@ end
 puts "Prep: #{Time.now - start}s"
 
 
-def bfg(nodes, double = nil)
+def find_paths(nodes, double = nil)
   paths = []
   q = [[START_NODE]]
   while path = q.shift
@@ -37,10 +37,10 @@ end
 
 
 start = Time.now
-part1 = bfg(nodes).size
+part1 = find_paths(nodes).size
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
 start = Time.now
-part2 = nodes.keys.select{ |k| k != START_NODE && k.downcase == k }.map{ |c| bfg(nodes, c) }.flatten(1).uniq.size
+part2 = nodes.keys.select{ |k| k != START_NODE && k.downcase == k }.map{ |c| find_paths(nodes, c) }.flatten(1).uniq.size
 puts "Part 2: #{part2} (#{Time.now - start}s)"
