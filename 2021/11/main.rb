@@ -1,6 +1,6 @@
 require_relative '../util/grid.rb'
 
-class DumpoOctopusCavern < Grid
+class DumboOctopusCavern < Grid
 
   def initialize(rows)
     super(rows)
@@ -23,7 +23,7 @@ end
 
 start = Time.now
 input = File.readlines("input", chomp: true).map{ |l| l.chars.map(&:to_i) }
-cavern = DumpoOctopusCavern.new(input)
+cavern = DumboOctopusCavern.new(input)
 puts "Prep: #{Time.now - start}s"
 
 
