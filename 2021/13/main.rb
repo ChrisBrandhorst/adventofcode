@@ -27,7 +27,7 @@ def inspect_dots(dots)
     pic[y] ||= []
     pic[y][x] = "█"
     pic
-  end.map{ |r| r.map{ |d| d ? '█' : ' '}.join('') }.join("\n")
+  end.map{ |r| r.map{ |d| d || ' '}.join('') }.join("\n")
 end
 
 
