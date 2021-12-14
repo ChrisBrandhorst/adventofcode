@@ -10,8 +10,8 @@ def apply_rules(pairs, rules)
     insert = rules[k]
     if insert
       a, b = k[0] + insert, insert + k[-1]
-      new_pairs[a] = new_pairs[a] ? new_pairs[a] + v : v
-      new_pairs[b] = new_pairs[b] ? new_pairs[b] + v : v
+      new_pairs[a] = (new_pairs[a] || 0) + v
+      new_pairs[b] = (new_pairs[b] || 0) + v
     end
   end
   new_pairs
@@ -25,10 +25,10 @@ def calc(template, rules, steps)
     template[0] => 1,
     template[-1] => 1
   }
-  pairs.each do |pair,t|
-    a, b = pair.chars
-    tally[a] = (tally[a] || 0) + t
-    tally[b] = (tally[b] || 0) + t
+  pairs.each do |k,v|
+    a, b = k.chars
+    tally[a] = (tally[a] || 0) + v
+    tally[b] = (tally[b] || 0) + v
   end
 
   tally.values.max / 2 - tally.values.min / 2
