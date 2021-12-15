@@ -18,7 +18,7 @@ class Chiton < Grid
   end
 
   def [](x, y = nil)
-    return super(x, y) unless @multiply.is_a?(Integer)
+    return super(x, y) if @multiply.nil? || !(@multiply > 1)
     x, y = *x if x.is_a?(Array)
 
     mx, my = x / @col_count, y / @row_count
@@ -36,7 +36,7 @@ class Chiton < Grid
 end
 
 
-def calc(grid, multiply = nil)
+def calc(grid, multiply = 1)
   grid.multiply = multiply
   path = astar(grid, [0,0], [grid.col_count * multiply - 1, grid.row_count * multiply - 1])
   path[1..-1].map{ |c| grid[c] }.sum
