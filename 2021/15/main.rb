@@ -36,7 +36,7 @@ class Chiton < Grid
 end
 
 
-def calc(grid, multiply = 1)
+def calc(grid, multiply = nil)
   grid.multiply = multiply
   path = astar(grid, [0,0], [grid.col_count * multiply - 1, grid.row_count * multiply - 1])
   path[1..-1].map{ |c| grid[c] }.sum
