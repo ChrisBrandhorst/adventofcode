@@ -48,4 +48,4 @@ end
 
 puts "Part 1: #{part1}"
 puts "Part 2: #{part2}"
-puts "Part1 & 2: #{Time.now - start}s"
+puts "Part 1 & 2: #{Time.now - start}s"

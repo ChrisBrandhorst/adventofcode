@@ -45,4 +45,4 @@ part1 = max_y
 part2 = velocities.count
 puts "Part 1: #{part1}"
 puts "Part 2: #{part2}"
-puts "Part 1&2: (#{Time.now - start}s)"
+puts "Part 1 & 2: (#{Time.now - start}s)"
