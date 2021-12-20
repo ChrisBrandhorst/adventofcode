@@ -26,9 +26,7 @@ class ImageGrid < InfiniteGrid
     end
 
     @points = {}
-    new_pix.each do |c,v|
-      self[c] = v if !reset_boundary || (c[0] >= @min_x && c[0] <= @max_x && c[1] >= @min_y && c[1] <= @max_y)
-    end
+    new_pix.each{ |c,v| self[c] = v if !reset_boundary || self.is_inside?(c) }
   end
 
   def count_lit

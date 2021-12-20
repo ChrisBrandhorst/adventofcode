@@ -55,6 +55,11 @@ class InfiniteGrid
     ]
   end
 
+  def is_inside?(x, y = nil)
+    x = [x,y] unless x.is_a?(Array)
+    x[0] >= @min_x && x[0] <= @max_x && x[1] >= @min_y && x[1] <= @max_y
+  end
+
   def flatten
     @points.values
   end
