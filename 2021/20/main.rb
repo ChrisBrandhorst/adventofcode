@@ -7,6 +7,7 @@ class ImageGrid < InfiniteGrid
 
   def initialize(rows)
     super(rows, '.', 3)
+    @version = 0
   end
 
   def adj_bin(x, y = nil)
@@ -14,11 +15,12 @@ class ImageGrid < InfiniteGrid
     self.adj(x,y).map{ |a| a == '#' ? '1' : '0' }.join.to_i(2)
   end
 
-  def step!(enhancement, reset_boundary = false)
+  def step!(enhancement)
+    @version += 1
     new_pix = {}
     self.each{ |c| new_pix[c] = enhancement[self.adj_bin(c)] }
     
-    if reset_boundary
+    if reset_boundary = @version % 2 == 0
       @min_x += 1
       @max_x -= 1
       @min_y += 1
@@ -37,7 +39,7 @@ end
 
 
 def step(grid, enhancement, n)
-  n.times { |i| grid.step!(enhancement, (i+1).even?) }
+  n.times { |i| grid.step!(enhancement) }
   grid.count_lit
 end
 
