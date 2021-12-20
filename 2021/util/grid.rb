@@ -27,24 +27,6 @@ class Grid
     @rows[y][x] = v
   end
 
-  def each
-    (0...@col_count).each do |y|
-      (0...@row_count).each do |x|
-        yield([x,y], self[x,y]) if block_given?
-      end
-    end
-    self
-  end
-
-  def inject(t)
-    (0...@col_count).each do |y|
-      (0...@row_count).each do |x|
-        t = yield(t, [x,y], self[x,y]) if block_given?
-      end
-    end
-    t
-  end
-
   def adj(x, y = nil)
     x, y = *x if x.is_a?(Array)
     ad = [
@@ -85,6 +67,29 @@ class Grid
     end
 
     ad.compact
+  end
+
+  def each
+    (0...@col_count).each do |y|
+      (0...@row_count).each do |x|
+        yield([x,y], self[x,y]) if block_given?
+      end
+    end
+    self
+  end
+
+  def each_adj(x, y = nil)
+    x, y = *x if x.is_a?(Array)
+    self.adj_coords(x,y).each{ |c| yield(c, self[c]) if block_given? }
+  end
+
+  def inject(t)
+    (0...@col_count).each do |y|
+      (0...@row_count).each do |x|
+        t = yield(t, [x,y], self[x,y]) if block_given?
+      end
+    end
+    t
   end
 
   def flatten
