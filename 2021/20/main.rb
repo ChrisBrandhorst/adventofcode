@@ -47,8 +47,7 @@ end
 start = Time.now
 input = File.readlines("input", chomp: true)
 enhancement = input[0]
-data = input[2..-1].map{ |l| l.chars }
-grid = ImageGrid.new(data)
+grid = ImageGrid.new(input[2..-1].map{ |l| l.chars })
 puts "Prep: #{Time.now - start}s"
 
 
