@@ -11,7 +11,7 @@ class ImageGrid < InfiniteGrid
 
   def adj_bin(x, y = nil)
     x, y = *x if x.is_a?(Array)
-    pix = self.adj(x,y).map{ |a| a == '#' ? '1' : '0' }.join.to_i(2)
+    self.adj(x,y).map{ |a| a == '#' ? '1' : '0' }.join.to_i(2)
   end
 
   def step!(enhancement, reset_boundary = false)
