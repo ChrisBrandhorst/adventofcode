@@ -44,11 +44,7 @@ end
 
 
 start = Time.now
-input = File.readlines("input", chomp: true)
-  .map{ |l|
-    r = l.split
-    [ r.first, r.last.scan(/[-\d]+/).map(&:to_i) ]
-  }
+input = File.readlines("input", chomp: true).map{ |l| r = l.split; [r.first, r.last.scan(/[-\d]+/).map(&:to_i)] }
 
 world = []
 input.map{ |op,cs| [op, Cuboid.from_input(*cs)] }.each do |op,c|
