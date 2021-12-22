@@ -68,8 +68,8 @@ puts "Prep: #{Time.now - start}s"
 
 
 start = Time.now
-part1_world = Cuboid.from_input(*[-50,50]*3)
-part1 = world.select{ |c| c.overlaps?(part1_world) }.sum(&:size)
+init_region = Cuboid.from_input(*[-50,50]*3)
+part1 = world.select{ |c| c.overlaps?(init_region) }.sum(&:size)
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
