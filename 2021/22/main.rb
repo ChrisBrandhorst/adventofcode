@@ -32,8 +32,7 @@ class Cuboid
     x_points.each_cons(2).each do |xa, xb|
       y_points.each_cons(2).each do |ya, yb|
         z_points.each_cons(2).each do |za, zb|
-          piece = Cuboid.new(xa, xb, ya, yb, za, zb)
-          pieces << piece if piece.overlaps?(self) && !piece.overlaps?(other)
+          pieces << Cuboid.new(xa, xb, ya, yb, za, zb)
         end
       end
     end
@@ -54,7 +53,7 @@ input.map{ |op,cs| [op, Cuboid.from_input(*cs)] }.each do |op,c|
     if pieces.nil?
       new_world << o
     else
-      new_world += pieces
+      new_world += pieces.reject{ |piece| !piece.overlaps?(o) || piece.overlaps?(c) }
     end
   end
   world = new_world
