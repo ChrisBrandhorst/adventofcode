@@ -4,7 +4,7 @@ class InfiniteGrid
   attr_reader :min_y, :max_y
   attr_accessor :lookaround, :empty_value
 
-  def initialize(rows, empty_value, lookaround = 1)
+  def initialize(rows, empty_value = '.', lookaround = 1)
     @points = {}
     (0...rows.first.size).each do |y|
       (0...rows.size).each do |x|
