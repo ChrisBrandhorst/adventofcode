@@ -1,8 +1,7 @@
 start = Time.now
 input = File.readlines("input", chomp: true)
-  .map(&:to_i)
-  .slice_before(0)
-  .map(&:sum)
+  .slice_before("")
+  .map{ |i| i.sum(&:to_i) }
   .sort
 puts "Prep: #{Time.now - start}s"
 
