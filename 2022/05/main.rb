@@ -11,7 +11,7 @@ input.each do |i|
   end
 end
 
-stacks = rows.transpose.map{ |s| s.select{ |c| c != " "}.reverse }
+stacks = rows.transpose.map{ |r| r.join.strip.reverse.chars }
 puts "Prep: #{Time.now - start}s"
 
 start = Time.now
