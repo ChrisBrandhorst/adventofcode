@@ -1,17 +1,9 @@
 start = Time.now
 input = File.readlines("input", chomp: true)
 
-rows, moves = [], []
-input.each do |i|
-  next if i == "" || i[1] == "1"
-  if i[0] == "m"
-    moves << i.scan(/\d+/).map(&:to_i)
-  else
-    rows << i.chars.select.with_index{ |_,j| (j - 1) % 4 == 0 }
-  end
-end
-
-stacks = rows.transpose.map{ |r| r.join.strip.reverse.chars }
+rows, moves = input.slice_after("").to_a
+stacks = rows[0...-2].map{ |r| r.chars.select.with_index{ (_2-1) % 4 == 0 } }.transpose.map{ (_1 - [" "]).reverse }
+moves.map!{ |m| m.scan(/\d+/).map(&:to_i) }
 puts "Prep: #{Time.now - start}s"
 
 start = Time.now
