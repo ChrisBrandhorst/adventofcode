@@ -12,7 +12,7 @@ def go(input, part2 = false)
       true: parts.pop[0].to_i,
       div: parts.pop[0].to_i,
       op: eval("lambda { |old| #{parts.pop[2]} }"),
-      items: parts.map{_1.first.to_i},
+      items: parts.map{_1[0].to_i},
       inspects: 0
     }
   end
