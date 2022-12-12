@@ -44,7 +44,7 @@ puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 start = Time.now
 
-as = map.inject([]){ |r,c| r << c if map[c] == "a"; r }
+as = map.inject([]){ |r,c| r << c if map[c] == "a" && map.adj(c).include?("b"); r }
 steps = as.inject({}) do |s,ac|
   unless s.include?(ac)
     path = astar(map, ac, map.end)
