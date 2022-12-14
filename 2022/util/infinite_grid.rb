@@ -3,6 +3,7 @@ class InfiniteGrid
   attr_reader :min_x, :max_x
   attr_reader :min_y, :max_y
   attr_accessor :lookaround, :empty_value
+  attr_reader :points
 
   def initialize(rows, empty_value = '.', lookaround = 1)
     @points = {}
@@ -64,9 +65,10 @@ class InfiniteGrid
     @points.values
   end
 
-  def inspect
+  def inspect(from_x = nil)
+    from_x = from_x.nil? ? @min_x : from_x
     (@min_y..@max_y).map do |y|
-      (@min_x..@max_x).map do |x|
+      (from_x..@max_x).map do |x|
         self[x,y]
       end.join
     end.join("\n")

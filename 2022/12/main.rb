@@ -44,22 +44,45 @@ puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 start = Time.now
 
-as = map.inject([]){ |r,c| r << c if map[c] == "a" && map.adj(c).include?("b"); r }
-steps = as.inject({}) do |s,ac|
-  unless s.include?(ac)
-    path = astar(map, ac, map.end)
-    if path
-      path.each.with_index do |c,i|
-        if map[c] == "a"
-          s[c] = path.size - i - 1
-        else
-          break
-        end
+
+require 'set'
+
+def search(map, path, cur, target, visited, paths)
+  # return path + [cur] if grid[cur] == target
+
+  map
+    .adj_coords(cur)
+    .select{ !visited.include?(_1) && map[cur].ord - map[_1].ord <= 1 }
+    .inject(paths){ |ps,t|
+      visited << t
+      path = path.dup + [t]
+      if map[t] == target
+        paths << path
+      else
+        paths = search(map, path, t, target, visited, paths)
       end
-    end
-  end
-  s
+      paths
+    }
+  
 end
 
-part2 = steps.values.min
+paths = search(map, [], map.end, "a", Set.new, Set.new)
+part2 = paths.map{ _1.size - 2 }.min
+
+# as = map.inject([]){ |r,c| r << c if map[c] == "a" && map.adj(c).include?("b"); r }
+# steps = as.inject({}) do |s,ac|
+#   next s if s.include?(ac)
+#   path = astar(map, ac, map.end)
+#   next s if path.nil?
+#   path.each.with_index do |c,i|
+#     if map[c] == "a"
+#       s[c] = path.size - i - 1
+#     else
+#       break
+#     end
+#   end
+#   s
+# end
+
+# part2 = steps.values.min
 puts "Part 2: #{part2} (#{Time.now - start}s)"
