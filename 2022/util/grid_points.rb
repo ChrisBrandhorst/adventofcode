@@ -28,12 +28,16 @@ class Grid
 
   def [](x, y = nil)
     x = [x,y] unless x.is_a?(Array)
-    @points[x]
+    @points[x] || @empty_value
   end
 
   def []=(x, y = nil, v)
     x, v = [x,y], v unless x.is_a?(Array)
     @points[x] = v
+    @min_x = [x.first, @min_x].min
+    @max_x = [x.first, @max_x].max
+    @min_y = [x.last, @min_y].min
+    @max_y = [x.last, @max_y].max
   end
 
   def each

@@ -10,11 +10,9 @@ class Heightmap < Grid
 
     self.each do |c,v|
       if v == "S"
-        self[c] = "a"
-        @start = c
+        self[@start = c] = "a"
       elsif v == "E"
-        self[c] = "z"
-        @end = c
+        self[@end = c] = "z"
       end
     end
   end
@@ -47,28 +45,40 @@ start = Time.now
 
 require 'set'
 
-def search(map, path, cur, target, visited, paths)
-  # return path + [cur] if grid[cur] == target
+def search(map, start, target)
 
-  map
-    .adj_coords(cur)
-    .select{ !visited.include?(_1) && map[cur].ord - map[_1].ord <= 1 }
-    .inject(paths){ |ps,t|
-      visited << t
-      path = path.dup + [t]
-      if map[t] == target
-        paths << path
-      else
-        paths = search(map, path, t, target, visited, paths)
+  q = [start]
+  parents = {}
+  visited = [start]
+  paths = []
+
+  until q.empty?
+    c = q.shift
+    if map[c] == target
+      path = [c]
+      path << parents[path.last] until path.last == start
+      paths << path
+    else
+      options = map
+        .adj_coords(c)
+        .select{ !visited.include?(_1) && map[c].ord - map[_1].ord <= 1 }
+      options.each do |t|
+        visited << t
+        parents[t] = c
+        q << t
       end
-      paths
-    }
+    end
+  end
   
+  paths
 end
 
-paths = search(map, [], map.end, "a", Set.new, Set.new)
-part2 = paths.map{ _1.size - 2 }.min
+part2 = search(map, map.end, "a").min_by(&:size).size - 1
+puts "Part 2: #{part2} (#{Time.now - start}s)"
 
+
+# Slower alternative using A*
+# 
 # as = map.inject([]){ |r,c| r << c if map[c] == "a" && map.adj(c).include?("b"); r }
 # steps = as.inject({}) do |s,ac|
 #   next s if s.include?(ac)
@@ -76,7 +86,8 @@ part2 = paths.map{ _1.size - 2 }.min
 #   next s if path.nil?
 #   path.each.with_index do |c,i|
 #     if map[c] == "a"
-#       s[c] = path.size - i - 1
+#       # s[c] = path.size - i - 1
+#       s[c] = path[i..-1]
 #     else
 #       break
 #     end
@@ -85,4 +96,3 @@ part2 = paths.map{ _1.size - 2 }.min
 # end
 
 # part2 = steps.values.min
-puts "Part 2: #{part2} (#{Time.now - start}s)"
