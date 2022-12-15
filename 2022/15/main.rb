@@ -17,21 +17,16 @@ def sensed_ranges(sensor_ranges, y)
   end
   x_ranges.sort_by!(&:first)
 
-  combined_ranges, possible_x = [], nil
-
-  base = x_ranges.shift
-  x_ranges.each do |xr|
+  base = x_ranges[0]
+  combined_ranges = x_ranges[1..-1].inject([]) do |cr,xr|
     if !base.overlaps?(xr)
-      combined_ranges << base
-      possible_x = base.last + 1
+      cr << base
       base = xr
     else
       base = base.combine(xr)
     end
-  end
-  combined_ranges << base
-
-  [combined_ranges, possible_x]
+    cr
+  end << base
 end
 
 
@@ -53,15 +48,14 @@ puts "Prep: #{Time.now - start}s"
 
 
 start = Time.now
-sensed, _ = sensed_ranges(sensors_max, TARGET_Y)
-part1 = sensed.sum(&:size) - (sensors_max.values + beacons.to_a).count{ _2 == TARGET_Y }
+part1 = sensed_ranges(sensors_max, TARGET_Y).sum(&:size) - (sensors_max.values + beacons.to_a).count{ _2 == TARGET_Y }
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
 start = Time.now
 part2 = nil
 (0..MAX_Y).detect do |y|
-  _, x = sensed_ranges(sensors_max, y)
-  x.nil? ? false : part2 = x * 4000000 + y
+  sensed = sensed_ranges(sensors_max, y)
+  sensed.size == 1 ? false : part2 = (sensed.first.last + 1) * 4000000 + y
 end
 puts "Part 2: #{part2} (#{Time.now - start}s)"
