@@ -40,7 +40,7 @@ end
 
 relevant_valves = input.keys.select{ input[_1].first > 0 }
 
-@opened_sets = {}
+@walked_paths = {}
 
 def dfs(all_valves, relevant_valves, distances, state, max_time = 30, best_score = 0)
   
@@ -53,14 +53,14 @@ def dfs(all_valves, relevant_valves, distances, state, max_time = 30, best_score
   # Check if over time
   if time > max_time
     released -= (time - max_time) * (flow_rate - all_valves[path.last].first)
-    @opened_sets[path[1..-2]] = released
+    @walked_paths[path[1..-2]] = released
     return [released, best_score].max
   end
 
   # Finish last bit
-  if path.size == relevant_valves.size + 1
+  if path.size == relevant_valves.size + 1 || state[:stopped]
     released += (max_time - time) * flow_rate
-    @opened_sets[path[1..-1]] = released
+    @walked_paths[path[1..-1]] = released
     return [released, best_score].max
   end
 
@@ -89,7 +89,15 @@ def dfs(all_valves, relevant_valves, distances, state, max_time = 30, best_score
       released: released + dr,
       flow_rate: flow_rate + all_valves[v].first
     }
+
+    # Normal path
     best_score = dfs(all_valves, relevant_valves, distances, s, max_time, best_score)
+
+    # You stop
+    s_s = s.dup
+    s_s[:stopped] = true
+    best_score = dfs(all_valves, relevant_valves, distances, s_s, max_time, best_score)
+    
   end
 
   best_score
@@ -105,7 +113,34 @@ part1 = dfs(input, relevant_valves, distances,{
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
-start = Time.now
 
-part2 = nil
+
+start = Time.now
+@walked_paths = {}
+
+dfs(input, relevant_valves, distances,{
+  path: ["AA"],
+  time: 0,
+  released: 0,
+  flow_rate: 0
+}, 26)
+
+elephant_paths = {}
+@walked_paths.each do |valves,score|
+  sorted = (relevant_valves - valves).sort
+  elephant_paths[sorted] = score if score > (elephant_paths[sorted] || 0)
+end
+
+puts "Checking #{elephant_paths.size} elephant paths...\n\n"
+part2 = elephant_paths.map.with_index do |(valves,score), i|
+  puts "\e[1A\e[K#{i+1}"
+  score + dfs(input, valves, distances,{
+    path: ["AA"],
+    time: 0,
+    released: 0,
+    flow_rate: 0
+  }, 26)
+end.max
+
+
 puts "Part 2: #{part2} (#{Time.now - start}s)"
