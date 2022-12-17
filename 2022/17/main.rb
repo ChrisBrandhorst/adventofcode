@@ -76,8 +76,8 @@ puts "Part 1: #{part1} (#{Time.now - start}s)"
 start = Time.now
 rock_count = 1000000000000
 pattern, first_occ = find_pattern(height_increments, 20)
-end_pos = (rock_count - first_occ) % pattern.size
+end_count = (rock_count - first_occ) % pattern.size
 part2 = height_increments[0,first_occ].sum +
-  (rock_count - first_occ - end_pos) / pattern.size * pattern.sum +
-  pattern[0,end_pos].sum
+  (rock_count - first_occ - end_count) / pattern.size * pattern.sum +
+  pattern[0,end_count].sum
 puts "Part 2: #{part2} (#{Time.now - start}s)"
