@@ -21,5 +21,5 @@ part1 = calc(input)
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 start = Time.now
-part2 = part1 = calc(input, true)
+part2 = calc(input, true)
 puts "Part 2: #{part2} (#{Time.now - start}s)"
