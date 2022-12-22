@@ -6,10 +6,6 @@ class Board < Grid
     @rows.map{ |r| r.map{ |c| c.nil? ? " " : c }.join("") }.join("\n")
   end
 
-  def [](x, y = nil)
-    super(x, y) || " "
-  end
-
   def row_range(y)
     (@rows[y].index{!_1.nil?}..@rows[y].rindex{!_1.nil?})
   end
@@ -17,10 +13,6 @@ class Board < Grid
   def col_range(x)
     col = (0...@row_count).map{ @rows[_1][x] }
     (col.index{!_1.nil?}..col.rindex{!_1.nil?})
-  end
-
-  def start_pos
-    [@rows[0].index("."), 0]
   end
 
 end
@@ -31,64 +23,66 @@ input = File.read("input", chomp: true).split("\n\n")
 board = Board.new( input.first.split("\n").map{ _1.chars.map{ |c| c == " " ? nil : c } } )
 path = input.last.scan(/(\d+|[A-Z])/).map.with_index{ _2 % 2 == 0 ? _1.first.to_i : _1.first }
 
+R = 0; D = 1; L = 2; U = 3
+
 if board.col_count > 50
   SIDE_DIM = 50
   EDGES = {
     [1,0] => {
-      2 =>  { side: [0,2], dir: 0 },
-      3 =>  { side: [0,3], dir: 0 }
+      L =>  { side: [0,2], dir: R },
+      U =>  { side: [0,3], dir: R }
     },
     [2,0] => {
-      0 =>  { side: [1,2], dir: 2 },
-      1 =>  { side: [1,1], dir: 2 },
-      3 =>  { side: [0,3], dir: 3 }
+      R =>  { side: [1,2], dir: L },
+      D =>  { side: [1,1], dir: L },
+      U =>  { side: [0,3], dir: U }
     },
     [1,1] => {
-      0 =>  { side: [2,0], dir: 3 },
-      2 =>  { side: [0,2], dir: 1 }
+      R =>  { side: [2,0], dir: U },
+      L =>  { side: [0,2], dir: D }
     },
     [0,2] => {
-      2 =>  { side: [1,0], dir: 0 },
-      3 =>  { side: [1,1], dir: 0 }
+      L =>  { side: [1,0], dir: R },
+      U =>  { side: [1,1], dir: R }
     },
     [1,2] => {
-      0 =>  { side: [2,0], dir: 2 },
-      1 =>  { side: [0,3], dir: 2 }
+      R =>  { side: [2,0], dir: L },
+      D =>  { side: [0,3], dir: L }
     },
     [0,3] => {
-      0 =>  { side: [1,2], dir: 3 },
-      1 =>  { side: [2,0], dir: 1 },
-      2 =>  { side: [1,0], dir: 1 }
+      R =>  { side: [1,2], dir: U },
+      D =>  { side: [2,0], dir: D },
+      L =>  { side: [1,0], dir: D }
     }
   }
 else
   SIDE_DIM = 4
   EDGES = {
     [2,0] => {
-      0 =>  { side: [3,2], dir: 2 },
-      2 =>  { side: [1,1], dir: 1 },
-      3 =>  { side: [0,1], dir: 1 }
+      R =>  { side: [3,2], dir: L },
+      L =>  { side: [1,1], dir: D },
+      U =>  { side: [0,1], dir: D }
     },
     [0,1] => {
-      1 =>  { side: [2,2], dir: 3 },
-      2 =>  { side: [3,2], dir: 3 },
-      3 =>  { side: [2,0], dir: 1 }
+      D =>  { side: [2,2], dir: U },
+      L =>  { side: [3,2], dir: U },
+      U =>  { side: [2,0], dir: D }
     },
     [1,1] => {
-      1 =>  { side: [2,2], dir: 0 },
-      3 =>  { side: [2,0], dir: 0 }
+      D =>  { side: [2,2], dir: R },
+      U =>  { side: [2,0], dir: R }
     },
     [2,1] => {
-      0 =>  { side: [3,2], dir: 1 }
+      R =>  { side: [3,2], dir: D }
     },
     [2,2] => {
-      1 =>  { side: [0,1], dir: 3 },
-      2 =>  { side: [1,1], dir: 3 }
+      D =>  { side: [0,1], dir: U },
+      L =>  { side: [1,1], dir: U }
     },
     [3,2] => {
-      0 =>  { side: [2,0], dir: 2 },
-      1 =>  { side: [0,1], dir: 0 },
-      3 =>  { side: [2,1], dir: 2 }
+      R =>  { side: [2,0], dir: L },
+      D =>  { side: [0,1], dir: R },
+      U =>  { side: [2,1], dir: L }
     }
   }
 end
@@ -96,12 +90,9 @@ end
 puts "Prep: #{Time.now - start}s"
 
 
-
-
-
 def walk(board, path, part2 = false)
 
-  pos = board.start_pos
+  x, y = board.row(0).index("."), 0
   dir = 0
   path.each do |i|
 
@@ -111,88 +102,78 @@ def walk(board, path, part2 = false)
       dir = (dir + 1) % 4
     else
       i.times do
-        x, y = pos
+        nx, ny, new_dir = x, y, dir
         case dir
-        when 0 then x += 1
-        when 1 then y += 1
-        when 2 then x -= 1
-        when 3 then y -= 1
+        when R then nx += 1
+        when D then ny += 1
+        when L then nx -= 1
+        when U then ny -= 1
         end
-        new_pos = [x,y]
 
+        out_of_bounds = board[nx,ny].nil?
 
-        unless part2
+        # === Part 1 ===
+        if out_of_bounds && !part2
+          case dir
+          when R then nx = board.row_range(ny).first
+          when D then ny = board.col_range(nx).first
+          when L then nx = board.row_range(ny).last
+          when U then ny = board.col_range(nx).last
+          end
 
-          # === Part 1 ===
-          if board[new_pos] == " "
+        # === Part 2 ===
+        elsif out_of_bounds && part2
+
+          side = [x / SIDE_DIM, y / SIDE_DIM]
+          
+          x_on_side = x - side[0] * SIDE_DIM
+          y_on_side = y - side[1] * SIDE_DIM
+
+          edge = EDGES[side][dir]
+          new_side = edge[:side]
+          new_dir = edge[:dir]
+
+          nx = new_side[0] * SIDE_DIM
+          ny = new_side[1] * SIDE_DIM
+
+          case new_dir
+          when R then
             case dir
-            when 0 then x = board.row_range(y).first
-            when 1 then y = board.col_range(x).first
-            when 2 then x = board.row_range(y).last
-            when 3 then y = board.col_range(x).last
+            when R then ny += y_on_side
+            when D then ny += SIDE_DIM - 1 - x_on_side
+            when L then ny += SIDE_DIM - 1 - y_on_side
+            when U then ny += x_on_side
             end
-            new_pos = [x,y]
+          when D then
+            case dir
+            when R then nx += SIDE_DIM - 1 - y_on_side
+            when D then nx += x_on_side
+            when L then nx += y_on_side
+            when U then nx += SIDE_DIM - 1 - x_on_side
+            end
+          when L then
+            nx += SIDE_DIM - 1
+            case dir
+            when R then ny += SIDE_DIM - 1 - y_on_side
+            when D then ny += x_on_side
+            when L then ny += y_on_side
+            when U then ny += SIDE_DIM - 1 - x_on_side
+            end
+          when U then
+            ny += SIDE_DIM - 1
+            case dir
+            when R then nx += y_on_side
+            when D then nx += SIDE_DIM - 1 - x_on_side
+            when L then nx += SIDE_DIM - 1 - y_on_side
+            when U then nx += x_on_side
+            end
           end
 
-          break if board[new_pos] == "#"
-          pos = new_pos
-
-        else
-
-          # === Part 2 ===
-          if board[new_pos] == " "
-            side = [pos[0] / SIDE_DIM,  pos[1] / SIDE_DIM]
-            
-            x_on_side = pos[0] - side[0] * SIDE_DIM
-            y_on_side = pos[1] - side[1] * SIDE_DIM
-
-            edge = EDGES[side][dir]
-            new_side = edge[:side]
-            new_dir = edge[:dir]
-
-            x = new_side[0] * SIDE_DIM
-            y = new_side[1] * SIDE_DIM
-
-            case new_dir
-            when 0 then
-              case dir
-              when 0 then y += y_on_side; puts "UNUSED"
-              when 1 then y += SIDE_DIM - 1 - x_on_side; puts "UNUSED"
-              when 2 then y += SIDE_DIM - 1 - y_on_side
-              when 3 then y += x_on_side
-              end
-            when 1 then
-              case dir
-              when 0 then x += SIDE_DIM - 1 - y_on_side
-              when 1 then x += x_on_side
-              when 2 then x += y_on_side
-              when 3 then x += SIDE_DIM - 1 - x_on_side; puts "UNUSED"
-              end
-            when 2 then
-              x += SIDE_DIM - 1
-              case dir
-              when 0 then y += SIDE_DIM - 1 - y_on_side
-              when 1 then y += x_on_side
-              when 2 then y += y_on_side; puts "UNUSED"
-              when 3 then y += SIDE_DIM - 1 - x_on_side; puts "UNUSED"
-              end
-            when 3 then
-              y += SIDE_DIM - 1
-              case dir
-              when 0 then x += y_on_side
-              when 1 then x += SIDE_DIM - 1 - x_on_side
-              when 2 then x += SIDE_DIM - 1 - y_on_side; puts "UNUSED"
-              when 3 then x += x_on_side
-              end
-            end
-
-            new_pos = [x,y]
-          end
-
-          break if board[new_pos] == "#"
-          pos = new_pos
-          dir = new_dir unless new_dir.nil?
         end
+
+        break if board[nx,ny] == "#"
+        x, y = nx, ny
+        dir = new_dir
 
       end
 
@@ -200,7 +181,7 @@ def walk(board, path, part2 = false)
 
   end
 
-  (pos[1] + 1) * 1000 + (pos[0] + 1) * 4 + dir
+  (y + 1) * 1000 + (x + 1) * 4 + dir
 
 end
 
