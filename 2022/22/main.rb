@@ -28,62 +28,22 @@ R = 0; D = 1; L = 2; U = 3
 if board.col_count > 50
   SIDE_DIM = 50
   EDGES = {
-    [1,0] => {
-      L =>  { side: [0,2], dir: R },
-      U =>  { side: [0,3], dir: R }
-    },
-    [2,0] => {
-      R =>  { side: [1,2], dir: L },
-      D =>  { side: [1,1], dir: L },
-      U =>  { side: [0,3], dir: U }
-    },
-    [1,1] => {
-      R =>  { side: [2,0], dir: U },
-      L =>  { side: [0,2], dir: D }
-    },
-    [0,2] => {
-      L =>  { side: [1,0], dir: R },
-      U =>  { side: [1,1], dir: R }
-    },
-    [1,2] => {
-      R =>  { side: [2,0], dir: L },
-      D =>  { side: [0,3], dir: L }
-    },
-    [0,3] => {
-      R =>  { side: [1,2], dir: U },
-      D =>  { side: [2,0], dir: D },
-      L =>  { side: [1,0], dir: D }
-    }
+    [1,0] => { L => [0,2,R], U => [0,3,R] },
+    [2,0] => { R => [1,2,L], D => [1,1,L], U => [0,3,U] },
+    [1,1] => { R => [2,0,U], L => [0,2,D] },
+    [0,2] => { L => [1,0,R], U => [1,1,R] },
+    [1,2] => { R => [2,0,L], D => [0,3,L] },
+    [0,3] => { R => [1,2,U], D => [2,0,D], L => [1,0,D] }
   }
 else
   SIDE_DIM = 4
   EDGES = {
-    [2,0] => {
-      R =>  { side: [3,2], dir: L },
-      L =>  { side: [1,1], dir: D },
-      U =>  { side: [0,1], dir: D }
-    },
-    [0,1] => {
-      D =>  { side: [2,2], dir: U },
-      L =>  { side: [3,2], dir: U },
-      U =>  { side: [2,0], dir: D }
-    },
-    [1,1] => {
-      D =>  { side: [2,2], dir: R },
-      U =>  { side: [2,0], dir: R }
-    },
-    [2,1] => {
-      R =>  { side: [3,2], dir: D }
-    },
-    [2,2] => {
-      D =>  { side: [0,1], dir: U },
-      L =>  { side: [1,1], dir: U }
-    },
-    [3,2] => {
-      R =>  { side: [2,0], dir: L },
-      D =>  { side: [0,1], dir: R },
-      U =>  { side: [2,1], dir: L }
-    }
+    [2,0] => { R => [3,2,L], L => [1,1,D], U => [0,1,D] },
+    [0,1] => { D => [2,2,U], L => [3,2,U], U => [2,0,D] },
+    [1,1] => { D => [2,2,R], U => [2,0,R] },
+    [2,1] => { R => [3,2,D] },
+    [2,2] => { D => [0,1,U], L => [1,1,U] },
+    [3,2] => { R => [2,0,L], D => [0,1,R], U => [2,1,L] }
   }
 end
 
@@ -91,9 +51,8 @@ puts "Prep: #{Time.now - start}s"
 
 
 def walk(board, path, part2 = false)
+  x, y, dir = board.row(0).index("."), 0, 0
 
-  x, y = board.row(0).index("."), 0
-  dir = 0
   path.each do |i|
 
     if i == "L"
@@ -123,18 +82,10 @@ def walk(board, path, part2 = false)
 
         # === Part 2 ===
         elsif out_of_bounds && part2
-
-          side = [x / SIDE_DIM, y / SIDE_DIM]
-          
-          x_on_side = x - side[0] * SIDE_DIM
-          y_on_side = y - side[1] * SIDE_DIM
-
-          edge = EDGES[side][dir]
-          new_side = edge[:side]
-          new_dir = edge[:dir]
-
-          nx = new_side[0] * SIDE_DIM
-          ny = new_side[1] * SIDE_DIM
+          side_x, side_y        = x / SIDE_DIM, y / SIDE_DIM
+          x_on_side, y_on_side  = x - side_x * SIDE_DIM, y - side_y * SIDE_DIM
+          nsx, nsy, new_dir     = EDGES[[side_x,side_y]][dir]
+          nx, ny                = nsx * SIDE_DIM, nsy * SIDE_DIM
 
           case new_dir
           when R then
@@ -172,13 +123,10 @@ def walk(board, path, part2 = false)
         end
 
         break if board[nx,ny] == "#"
-        x, y = nx, ny
-        dir = new_dir
+        x, y, dir  = nx, ny, new_dir
 
       end
-
     end
-
   end
 
   (y + 1) * 1000 + (x + 1) * 4 + dir
