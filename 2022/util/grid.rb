@@ -5,7 +5,7 @@ class Grid
   def initialize(rows)
     @rows = rows
     @row_count = @rows.size
-    @col_count = @rows.first.size
+    @col_count = @rows.map(&:size).max
     @with_diag = false
   end
 
