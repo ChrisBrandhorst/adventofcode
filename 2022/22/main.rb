@@ -7,11 +7,12 @@ class Board < Grid
   end
 
   def row_range(y)
-    (@rows[y].index{!_1.nil?}..@rows[y].rindex{!_1.nil?})
+    row = row(y)
+    (row.index{!_1.nil?}..row.rindex{!_1.nil?})
   end
 
   def col_range(x)
-    col = (0...@row_count).map{ @rows[_1][x] }
+    col = col(x)
     (col.index{!_1.nil?}..col.rindex{!_1.nil?})
   end
 
@@ -21,7 +22,7 @@ start = Time.now
 input = File.read("input", chomp: true).split("\n\n")
 
 board = Board.new( input.first.split("\n").map{ _1.chars.map{ |c| c == " " ? nil : c } } )
-path = input.last.scan(/(\d+|[A-Z])/).map.with_index{ _2 % 2 == 0 ? _1.first.to_i : _1.first }
+path = input.last.scan(/(\d+|[A-Z])/).map(&:first).map{ _1.to_i == 0 ? _1 : _1.to_i }
 
 R = 0; D = 1; L = 2; U = 3
 
@@ -51,7 +52,7 @@ puts "Prep: #{Time.now - start}s"
 
 
 def walk(board, path, part2 = false)
-  x, y, dir = board.row(0).index("."), 0, 0
+  x, y, dir = board.row(0).index{ _1 != nil }, 0, 0
 
   path.each do |i|
 
@@ -123,14 +124,13 @@ def walk(board, path, part2 = false)
         end
 
         break if board[nx,ny] == "#"
-        x, y, dir  = nx, ny, new_dir
+        x, y, dir = nx, ny, new_dir
 
       end
     end
   end
 
   (y + 1) * 1000 + (x + 1) * 4 + dir
-
 end
 
 

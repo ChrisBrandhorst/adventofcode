@@ -17,6 +17,10 @@ class Grid
     @rows[y]
   end
 
+  def col(x)
+    (0...@row_count).map{ row(_1)[x] }
+  end
+
   def [](x, y = nil)
     x, y = *x if x.is_a?(Array)
     x < 0 || y < 0 || x > @col_count - 1 || y > @row_count - 1 ? nil : @rows[y][x]
