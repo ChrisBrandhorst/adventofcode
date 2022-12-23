@@ -1,6 +1,5 @@
 start = Time.now
-#input = File.readlines("input", chomp: true)
-input = File.readlines("aoc_2022_day05_large_input-3.txt", chomp: true)
+input = File.readlines("input", chomp: true)
 
 rows, moves = input.slice_after("").to_a
 stacks = rows[0...-2].map{ |r| r.chars.select.with_index{ (_2-1) % 4 == 0 } }.transpose.map{ (_1 - [" "]).reverse }
