@@ -13,29 +13,20 @@ def simulate(knots, input)
   input.each do |(d,v)|
     v.times do |t|
 
-      head = knots[0]
-
-      if d == "R"
-        head[0] += 1
-      elsif d == "L"
-        # head[0] -= 1 # Doet niet 🤷‍♀️
-        knots[0] = [head[0] - 1, head[1]]
-      elsif d == "D"
-        head[1] -= 1
-      elsif d == "U"
-        head[1] += 1
+      case d
+      when "R" then knots.first[0] += 1
+      when "L" then knots.first[0] -= 1
+      when "D" then knots.first[1] -= 1
+      when "U" then knots.first[1] += 1
       end
 
       (0...knots.size-1).each do |i|
-        h, t = knots[i], knots[i+1]
-        d_x, d_y = h.first - t.first, h.last - t.last
+        h, t = knots[i..i+1]
+        d_x, d_y = h[0] - t[0], h[1] - t[1]
 
         next if d_x.abs <= 1 && d_y.abs <= 1
 
-        t = [t.first + d_x, t.last + d_y]
-        # t[0] = t[0] + d_x
-        # t[1] = t[1] + d_y
-
+        t = [t[0] + d_x, t[1] + d_y]  
         t[0] -= d_x / d_x.abs if d_x.abs > 1
         t[1] -= d_y / d_y.abs if d_y.abs > 1
 
@@ -56,12 +47,11 @@ def vis(knots)
 end
 
 start = Time.now
-knots = [[0,0]] * 2
+knots = 2.times.map{[0,0]}
 part1 = simulate(knots, input)
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 start = Time.now
-# knots = [[11,5]] * 10
-knots = [[0,0]] * 10
+knots = 10.times.map{[0,0]}
 part2 = simulate(knots, input)
 puts "Part 2: #{part2} (#{Time.now - start}s)"
