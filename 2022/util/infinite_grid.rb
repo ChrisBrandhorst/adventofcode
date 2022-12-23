@@ -6,17 +6,23 @@ class InfiniteGrid
   attr_reader :points
 
   def initialize(rows, empty_value = '.', lookaround = 1)
+    @empty_value = empty_value
+    @lookaround = lookaround
     @points = {}
-    (0...rows.first.size).each do |y|
-      (0...rows.size).each do |x|
+
+    (0...rows.size).each do |y|
+      (0...rows.first.size).each do |x|
         @points[[x,y]] = rows[y][x]
       end
     end
 
-    @min_x, @max_x = 0, rows.size - 1
-    @min_y, @max_y = 0, rows.first.size - 1
-    @empty_value = empty_value
-    @lookaround = lookaround
+    @min_x = @min_y = 0
+    if rows.size == 0 || rows.size == 1 && rows.first.size == 0
+      @max_x = @max_y = -1
+    else
+      @max_x = rows.first.size - 1
+      @max_y = rows.size - 1
+    end
   end
 
   def [](x, y = nil)
@@ -41,19 +47,42 @@ class InfiniteGrid
     end
   end
 
-  def adj(x, y = nil)
+  def select
+    r = []
+    self.each do |c,v|
+      r << c if block_given? && yield(c, v)
+    end
+    r
+  end
+
+  def inject(r)
+    self.each do |c,v|
+      r = yield(r, c, v) if block_given?
+    end
+    r
+  end
+
+  def adj_coords(x, y = nil)
     x, y = *x if x.is_a?(Array)
     ad = [
-      self[x-1,y-1],
-      self[x,y-1],
-      self[x+1,y-1],
-      self[x-1,y],
-      self[x,y],
-      self[x+1,y],
-      self[x-1,y+1],
-      self[x,y+1],
-      self[x+1,y+1]
+      [x-1,y-1],
+      [x,y-1],
+      [x+1,y-1],
+      [x-1,y],
+      [x,y],
+      [x+1,y],
+      [x-1,y+1],
+      [x,y+1],
+      [x+1,y+1]
     ]
+  end
+
+  def adj(x, y = nil)
+    self.adj_coords(x, y).map{ self[_1] }
+  end
+
+  def adj_coords_values(x, y = nil)
+    self.adj_coords(x, y).map{ [_1,self[_1]] }
   end
 
   def is_inside?(x, y = nil)
