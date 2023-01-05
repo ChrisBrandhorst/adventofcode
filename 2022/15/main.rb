@@ -18,7 +18,7 @@ def sensed_ranges(sensor_ranges, y)
   x_ranges.sort_by!(&:first)
 
   base = x_ranges[0]
-  combined_ranges = x_ranges[1..-1].inject([]) do |cr,xr|
+  x_ranges[1..-1].inject([]) do |cr,xr|
     if !base.overlaps?(xr)
       cr << base
       base = xr

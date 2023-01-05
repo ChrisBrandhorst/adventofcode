@@ -19,7 +19,7 @@ end
 
 def fits?(grid, r, x, y)
   ri = rock_info(r, x, y)
-  !ri[:area].any?{ grid[_1] == "#" } && x >= 0 && x + ri[:width] <= CAVE_WIDTH && y >= 0
+  ri[:area].none?{ grid[_1] == "#" } && x >= 0 && x + ri[:width] <= CAVE_WIDTH && y >= 0
 end
 
 def find_pattern(arr, pl)
