@@ -6,24 +6,23 @@ SNAFU = { "=" => -2, "-" => -1 }
 puts "Prep: #{Time.now - start}s"
 
 def snafu_to_dec(snafu)
-  snafu.map.with_index.sum{ _1 * 5 ** _2 }
+  snafu.map.with_index.sum{ SNAFU.fetch(_1, _1.to_i) * 5 ** _2 }
 end
 
 start = Time.now
+dec = input.sum{ snafu_to_dec(_1.reverse) }
 
-dec = input.sum{ |l| snafu_to_dec( l.map{ SNAFU[_1] || _1.to_i }.reverse ) }
-
-h = 0; h += 1 until 5 ** h > dec
+h = Math.log(dec, 5).ceil
 snafu = [2] * h
 rd = snafu_to_dec(snafu)
 
-(0...h).to_a.reverse.each do |i|
+(h-1).downto(0) do |i|
   s = 5 ** i
-  while rd - s >= dec
-    rd -= s
-    snafu[h-i-1] -= 1
-  end
+  l = (rd - dec) / s
+  next if l <= 0
+  rd -= s * l
+  snafu[h-i-1] -= l
 end
 
-part1 = snafu.map{ SNAFU.invert[_1] || _1 }.join
+part1 = snafu.map{ SNAFU.key(_1) || _1 }.join
 puts "Part 1: #{part1} (#{Time.now - start}s)"
