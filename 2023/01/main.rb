@@ -16,7 +16,8 @@ class String
   end
 
   def get_int_at(i)
-    self[i] =~ /\d/ ? self[i] : ((s = INT_MAP.find{ |k,v| self[i,k.size] == k }) ? s.last : nil)
+    c = self[i]
+    c.is_int? ? c : ((s = INT_MAP.find{ |k,v| self[i,k.size] == k }) ? s.last : nil)
   end
 end
 
