@@ -1,14 +1,4 @@
-INT_MAP = {
-  "one" => "1",
-  "two" => "2",
-  "three" => "3",
-  "four" => "4",
-  "five" => "5",
-  "six" => "6",
-  "seven" => "7",
-  "eight" => "8",
-  "nine" => "9"
-}
+INT_NAMES = %w"one two three four five six seven eight nine"
 
 class String
   def is_int?
@@ -17,7 +7,7 @@ class String
 
   def get_int_at(i)
     c = self[i]
-    c.is_int? ? c : ((s = INT_MAP.find{ |k,v| self[i,k.size] == k }) ? s.last : nil)
+    c.is_int? ? c : ((s = INT_NAMES.index{ self[i,_1.size] == _1 }) ? s + 1 : nil)
   end
 
   def get_all_ints
@@ -49,6 +39,6 @@ part2 = input.sum do |l|
     last ||= l.get_int_at(l.size-i-1)
     break if first && last
   end
-  (first + last).to_i
+  (first.to_s + last.to_s).to_i
 end
 puts "Part 2: #{part2} (#{Time.now - start}s)"
