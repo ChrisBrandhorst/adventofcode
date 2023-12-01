@@ -16,7 +16,7 @@ class String
   end
 
   def get_int_at(i)
-    self[i].is_int? ? self[i] : ((s = INT_MAP.find{ |k,v| self[i,k.size] == k }) ? s.last : nil)
+    self[i] =~ /\d/ ? self[i] : ((s = INT_MAP.find{ |k,v| self[i,k.size] == k }) ? s.last : nil)
   end
 end
 
@@ -27,7 +27,7 @@ puts "Prep: #{Time.now - start}s"
 
 
 start = Time.now
-part1 = input.map(&:chars).sum{ |i| (i.find{ _1.is_int? } + i.reverse.find{ _1.is_int? }).to_i }
+part1 = input.sum{ |l| fl = l.chars.select{ _1.is_int? }; (fl.first + fl.last).to_i }
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
