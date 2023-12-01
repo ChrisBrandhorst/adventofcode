@@ -19,6 +19,10 @@ class String
     c = self[i]
     c.is_int? ? c : ((s = INT_MAP.find{ |k,v| self[i,k.size] == k }) ? s.last : nil)
   end
+
+  def get_all_ints
+    (0...self.size).inject([]){ |r,i| r << self.get_int_at(i); r }.compact
+  end
 end
 
 
@@ -28,8 +32,13 @@ puts "Prep: #{Time.now - start}s"
 
 
 start = Time.now
-part1 = input.sum{ |l| fl = l.chars.select{ _1.is_int? }; (fl.first + fl.last).to_i }
+part1 = input.sum{ _1.chars.select(&:is_int?).values_at(0,-1).join.to_i }
 puts "Part 1: #{part1} (#{Time.now - start}s)"
+
+
+start = Time.now
+part2 = input.sum{ _1.get_all_ints.values_at(0,-1).join.to_i }
+puts "Part 2: #{part2} (#{Time.now - start}s)"
 
 
 start = Time.now
