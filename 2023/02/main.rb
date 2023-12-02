@@ -6,7 +6,7 @@ puts "Prep: #{Time.now - start}s"
 
 start = Time.now
 MAXES = {red: 12, green: 13, blue: 14}
-part1 = input.each_with_index.sum{ |g,i| !g.any?{ |r| r.detect{ |k,v| v > MAXES[k] } } ? i + 1 : 0 }
+part1 = input.each_with_index.sum{ |g,i| g.any?{ |r| r.detect{ |k,v| v > MAXES[k] } } ? 0 : i + 1 }
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
