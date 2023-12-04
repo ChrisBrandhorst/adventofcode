@@ -1,6 +1,5 @@
 start = Time.now
-input = File.readlines("input")
-  .map{ |l| l.split(": ").last.split(" | ").map{ _1.split.map(&:to_i) }[0..-1].inject(&:&).size }
+input = File.readlines("input").map{ |l| l.split.map(&:to_i).slice_before(0).inject(&:&).size - 1 }
 puts "Prep: #{Time.now - start}s"
 
 
