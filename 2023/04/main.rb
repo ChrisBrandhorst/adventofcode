@@ -1,6 +1,6 @@
 start = Time.now
 input = File.readlines("input")
-  .map{ |l| l.split(": ").last.split(" | ").map{ _1.split(" ").map(&:to_i) }[0..-1].inject(&:intersection).size }
+  .map{ |l| l.split(": ").last.split(" | ").map{ _1.split.map(&:to_i) }[0..-1].inject(&:&).size }
 puts "Prep: #{Time.now - start}s"
 
 
@@ -10,5 +10,5 @@ puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
 start = Time.now
-part2 = (cards = [1]*input.size).each_with_index.sum{ |m,i| (1..input[i]).each{ cards[i+_1] += m }; m }
+part2 = (cc = [1]*input.size).each_with_index.sum{ |m,i| (1..input[i]).each{ cc[i+_1] += m }; m }
 puts "Part 2: #{part2} (#{Time.now - start}s)"
