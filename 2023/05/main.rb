@@ -6,41 +6,21 @@ class Range
 end
 
 
-start = Time.now
-input = File.readlines("input", chomp: true)
-
-seeds = input.shift.split.drop(1).map(&:to_i)
-maps = []
-input.each do |l|
-  if l == ""
-    maps << []
-  elsif l[0] =~ /\d/
-    ds, ss, l = l.split.map(&:to_i)
-    maps.last << [(ss...ss+l),ds-ss]
-  end
-end
-puts "Prep: #{Time.now - start}s"
-
-
-start = Time.now
-locs = seeds.map do |s|
+def loc_single(seed, maps)
   maps.each do |m|
     m.each do |sr, diff|
-      if sr.include?(s)
-        s += diff
+      if sr.include?(seed)
+        seed += diff
         break
       end
     end
   end
-  s
+  seed
 end
-part1 = locs.min
-puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
-start = Time.now
-locs = seeds.each_slice(2).map{ (_1..._1+_2) }.map do |sr|
-  ranges = [sr]
+def loc_range(seed_range, maps)
+  ranges = [seed_range]
   maps.each do |m|
     new_ranges = []
     ranges.each do |r|
@@ -59,5 +39,30 @@ locs = seeds.each_slice(2).map{ (_1..._1+_2) }.map do |sr|
   end
   ranges.map(&:min).min
 end
-part2 = locs.min
+
+
+start = Time.now
+input = File.readlines("input", chomp: true)
+seeds = input.shift.split.drop(1).map(&:to_i)
+maps = input.slice_before("").map do |l|
+  l.drop(2).map do |m|
+    ds, ss, l = m.split.map(&:to_i)
+    [(ss...ss+l), ds-ss]
+  end
+end
+puts "Prep: #{Time.now - start}s"
+
+
+start = Time.now
+part1 = seeds.map{ loc_single(_1, maps) }.min
+puts "Part 1: #{part1} (#{Time.now - start}s)"
+
+
+start = Time.now
+part2 = seeds.each_slice(2).map{ (_1..._1+_2) }.map{ loc_range(_1, maps) }.min
 puts "Part 2: #{part2} (#{Time.now - start}s)"
+
+
+start = Time.now
+part1b = seeds.map{ (_1.._1) }.map{ loc_range(_1, maps) }.min
+puts "Part 1 with 2 logic: #{part1b} (#{Time.now - start}s)"
