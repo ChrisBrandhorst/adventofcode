@@ -7,35 +7,28 @@ end
 
 
 def loc_single(seed, maps)
-  maps.each do |m|
-    m.each do |sr, diff|
-      if sr.include?(seed)
-        seed += diff
-        break
-      end
-    end
+  maps.inject(seed) do |s,m|
+    m.detect{ |sr, diff| s += diff if sr.include?(s) }
+    s
   end
-  seed
 end
 
 
 def loc_range(seed_range, maps)
-  ranges = [seed_range]
-  maps.each do |m|
-    new_ranges = []
-    ranges.each do |r|
-      m.each do |mr, diff|
-        overlap = r & mr
-        if overlap
+  ranges = maps.inject([seed_range]) do |rs,m|
+    new_rs = rs.inject([]) do |nr,r|
+      m.detect do |mr, diff|
+        if overlap = r & mr
           diff_range = (overlap.min + diff)..(overlap.max + diff)
-          new_ranges << (r.min...mr.min) unless r.min >= mr.min
-          new_ranges << diff_range
-          new_ranges << (mr.max+1..r.max) unless r.max <= mr.max
-          break
+          nr << (r.min...mr.min) unless r.min >= mr.min
+          nr << diff_range
+          nr << (mr.max+1..r.max) unless r.max <= mr.max
+          true
         end
       end
+      nr
     end
-    ranges = new_ranges if new_ranges.any?
+    new_rs.any? ? new_rs : rs
   end
   ranges.map(&:min).min
 end
