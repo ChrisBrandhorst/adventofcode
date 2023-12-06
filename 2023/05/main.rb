@@ -54,8 +54,3 @@ puts "Part 1: #{part1} (#{Time.now - start}s)"
 start = Time.now
 part2 = seeds.each_slice(2).map{ (_1..._1+_2) }.map{ loc_range(_1, maps) }.min
 puts "Part 2: #{part2} (#{Time.now - start}s)"
-
-
-start = Time.now
-part1b = seeds.map{ (_1.._1) }.map{ loc_range(_1, maps) }.min
-puts "Part 1 with 2 logic: #{part1b} (#{Time.now - start}s)"
