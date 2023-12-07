@@ -10,10 +10,10 @@ def winnings(hb, do_jokers = false)
   sb = hb.map do |hand,bid|
     cards = hand.map{ strength.index(_1) }
     tally = cards.tally
-    jokers = tally[0] || 0
-    tally.delete(0) if do_jokers && jokers > 0
+    jokers = do_jokers && tally[0]
+    tally.delete(0) if jokers
     sorted_counts = tally.values.sort.reverse
-    sorted_counts[0] = (sorted_counts[0] || 0) + jokers if do_jokers
+    sorted_counts[0] = (sorted_counts[0] || 0) + jokers if jokers
     [sorted_counts + cards, bid]
   end
 
