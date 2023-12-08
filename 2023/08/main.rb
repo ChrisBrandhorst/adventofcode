@@ -1,7 +1,7 @@
 start = Time.now
 input = File.readlines("input", chomp: true)
 dirs = input.shift.chars
-network = input.drop(1).map{ _1.scan(/([A-Z\d]+)/).map(&:first) }.map{ [_1, [_2,_3]] }.to_h
+network = input.drop(1).map{ r = _1.scan(/[A-Z]+/); [r.shift, r] }.to_h
 puts "Prep: #{Time.now - start}s"
 
 
