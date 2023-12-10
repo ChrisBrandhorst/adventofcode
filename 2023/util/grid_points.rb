@@ -41,12 +41,17 @@ class Grid
   end
 
   def each
-    (0...@col_count).each do |y|
-      (0...@row_count).each do |x|
+    (0...@row_count).each do |y|
+      (0...@col_count).each do |x|
         yield([x,y], self[x,y]) if block_given?
       end
     end
     self
+  end
+
+  def each_adj(x, y = nil)
+    x, y = *x if x.is_a?(Array)
+    self.adj_coords(x,y).each{ |c| yield(c, self[c]) if block_given? }
   end
 
   def inject(t)
@@ -58,21 +63,25 @@ class Grid
     t
   end
 
+  def detect(&block)
+    @points.detect(&block)
+  end
+
   def adj(x, y = nil)
     x, y = *x if x.is_a?(Array)
     ad = [
-      self[x-1,y],
-      self[x+1,y],
       self[x,y-1],
-      self[x,y+1]
+      self[x+1,y],
+      self[x,y+1],
+      self[x-1,y]
     ]
 
     if @with_diag
       ad += [
-        self[x-1,y-1],
         self[x+1,y-1],
         self[x+1,y+1],
-        self[x-1,y+1]
+        self[x-1,y+1],
+        self[x-1,y-1]
       ]
     end
 
@@ -82,18 +91,18 @@ class Grid
   def adj_coords(x, y = nil)
     x, y = *x if x.is_a?(Array)
     ad = [
-      self[x-1,y] ? [x-1,y] : nil,
-      self[x+1,y] ? [x+1,y] : nil,
       self[x,y-1] ? [x,y-1] : nil,
-      self[x,y+1] ? [x,y+1] : nil
+      self[x+1,y] ? [x+1,y] : nil,
+      self[x,y+1] ? [x,y+1] : nil,
+      self[x-1,y] ? [x-1,y] : nil
     ]
 
     if @with_diag
       ad += [
-        self[x-1,y-1] ? [x-1,y-1] : nil,
         self[x+1,y-1] ? [x+1,y-1] : nil,
         self[x+1,y+1] ? [x+1,y+1] : nil,
-        self[x-1,y+1] ? [x-1,y+1] : nil
+        self[x-1,y+1] ? [x-1,y+1] : nil,
+        self[x-1,y-1] ? [x-1,y-1] : nil
       ]
     end
 
