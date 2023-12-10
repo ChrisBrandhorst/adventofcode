@@ -1,6 +1,7 @@
 require '../util/grid_points'
 require 'set'
 
+
 class MetalIsland < Grid
   PRETTY_PIPES = { "F": "╔", "L": "╚", "J": "╝", "7": "╗", "-": "═", "|": "║" }
 
@@ -20,9 +21,6 @@ class MetalIsland < Grid
       end
     end
     poss
-  end
-
-  def pretty
   end
 
 end
@@ -52,12 +50,14 @@ route = [] +
   circle[1,circle.size-2].map(&:first) +
   circle.last +
   circle[1,circle.size-2].map(&:last).reverse
-route_poss = Set.new(route)
+route_set = Set.new(route)
 
 # Trace inside along route
 insides = Set.new
 CORNERS = {"7": 1, "J": 3, "L": 5, "F": 7}
 # ⚠️ ASSUMPTION
+# Can be calculated by searching for the first pipe tile. The tile directly before that is OUTside.
+# Route starting point can then be changed to that first pipe tile.
 lpi = [animal_start[0]-1, animal_start[1]]
 
 route.each_cons(2) do |prev,cur|
@@ -100,15 +100,14 @@ route.each_cons(2) do |prev,cur|
     lpi = poss_insides[dir]
   end
 
-  poss_insides.each{ |ni| insides << ni if !route_poss.include?(ni) }
+  poss_insides.each{ |ni| insides << ni if !route_set.include?(ni) }
 end
 
 # Flood fill from each inside tile
 stack = insides.to_a
 until stack.empty?
-  ri = stack.shift
-  island.each_adj(ri) do |c,v|
-    next if route_poss.include?(c) || insides.include?(c)
+  island.each_adj(stack.shift) do |c,v|
+    next if route_set.include?(c) || insides.include?(c)
     insides << c
     stack << c
   end
@@ -117,6 +116,7 @@ end
 part2 = insides.size
 puts "Part 2: #{part2} (#{Time.now - start}s)"
 
-# route_poss.each{ |c| island[c] = MetalIsland::PRETTY_PIPES[island[c].to_sym] }
+
+# route_set.each{ |c| island[c] = MetalIsland::PRETTY_PIPES[island[c].to_sym] }
 # insides.each{ |c| island[c] = "I" }
 # p island
