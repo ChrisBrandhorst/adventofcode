@@ -70,13 +70,14 @@ route_set = Set.new(route)
 # Trace inside along route
 insides = Set.new
 CORNERS = {"7": 1, "J": 3, "L": 5, "F": 7}
-# ⚠️ ASSUMPTION
-# Can be calculated by searching for the first pipe tile. The tile directly before that is OUTside.
-# Route starting point can then be changed to that first pipe tile.
-lpi = [animal_start[0]-1, animal_start[1]]
-# lpi = [animal_start[0], animal_start[1]-1]
 
-# view_island = MetalIsland.new(input)
+# ⚠️ Pick interior
+lpi = [animal_start[0], animal_start[1]-1]
+
+# Get direction of route
+first_c = island.detect{ |c,v| v == "F" && route_set.include?(c) }.first
+second_c = route[route.index(first_c) + 1]
+clock = second_c[0] > first_c[0] ? -1 : 1
 
 route.each_cons(2) do |prev,cur|
 
@@ -92,12 +93,12 @@ route.each_cons(2) do |prev,cur|
   when "-"
     poss_insides << [lpi[0]+dx,lpi[1]]
   else
-    i = CORNERS[tile.to_sym]
     case tile
     when '7', 'L', 1, 5; dir = dy == -1 ? 1 : -1
     when 'J', 'F', 3, 7; dir = dx == -1 ? 1 : -1
     end
-    poss_insides = adj_coords[i-1,3] if lpi == adj_coords[(i + 2 * dir) % 8]
+    i = CORNERS[tile.to_sym]
+    poss_insides = adj_coords[i-1,3] if lpi == adj_coords[(i + 2 * dir * clock) % 8]
   end
 
   if poss_insides.empty?
@@ -108,19 +109,6 @@ route.each_cons(2) do |prev,cur|
   end
 
   poss_insides.each{ |ni| insides << ni if !route_set.include?(ni) }
-
-  # view_island[cur] = MetalIsland::PRETTY_PIPES[view_island[cur].to_sym]
-  # poss_insides.each do |ni|
-  #   if !route_set.include?(ni)
-  #     insides << ni
-  #   end
-  #   view_island[ni] = "I"
-  # end
-  # puts "-------------------"
-  # p poss_insides
-  # p view_island
-  # gets
-
 end
 
 # Flood fill from each inside tile
