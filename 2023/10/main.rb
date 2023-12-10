@@ -23,6 +23,21 @@ class MetalIsland < Grid
     poss
   end
 
+  def adj_coords_loop(x, y = nil)
+    x, y = *x if x.is_a?(Array)
+    [
+      [x,y-1],    # 0 T
+      [x+1,y-1],  # 1 TR
+      [x+1,y],    # 2 R
+      [x+1,y+1],  # 3 BR
+      [x,y+1],    # 4 B
+      [x-1,y+1],  # 5 BL
+      [x-1,y],    # 6 L
+      [x-1,y-1],  # 7 TL
+      [x,y-1]     # 8 T
+    ]
+  end
+
 end
 
 
@@ -59,24 +74,16 @@ CORNERS = {"7": 1, "J": 3, "L": 5, "F": 7}
 # Can be calculated by searching for the first pipe tile. The tile directly before that is OUTside.
 # Route starting point can then be changed to that first pipe tile.
 lpi = [animal_start[0]-1, animal_start[1]]
+# lpi = [animal_start[0], animal_start[1]-1]
+
+# view_island = MetalIsland.new(input)
 
 route.each_cons(2) do |prev,cur|
 
   poss_insides = []
   cx, cy = cur
   dx, dy = cx - prev[0], cy - prev[1]
-
-  adj_coords = [
-    [cx,cy-1],    # 0 T
-    [cx+1,cy-1],  # 1 TR
-    [cx+1,cy],    # 2 R
-    [cx+1,cy+1],  # 3 BR
-    [cx,cy+1],    # 4 B
-    [cx-1,cy+1],  # 5 BL
-    [cx-1,cy],    # 6 L
-    [cx-1,cy-1],  # 7 TL
-    [cx,cy-1]     # 8 T
-  ]
+  adj_coords = island.adj_coords_loop(cx, cy)
 
   dir = 0
   case tile = island[cur]
@@ -85,11 +92,11 @@ route.each_cons(2) do |prev,cur|
   when "-"
     poss_insides << [lpi[0]+dx,lpi[1]]
   else
+    i = CORNERS[tile.to_sym]
     case tile
     when '7', 'L', 1, 5; dir = dy == -1 ? 1 : -1
     when 'J', 'F', 3, 7; dir = dx == -1 ? 1 : -1
     end
-    i = CORNERS[tile.to_sym]
     poss_insides = adj_coords[i-1,3] if lpi == adj_coords[(i + 2 * dir) % 8]
   end
 
@@ -101,6 +108,19 @@ route.each_cons(2) do |prev,cur|
   end
 
   poss_insides.each{ |ni| insides << ni if !route_set.include?(ni) }
+
+  # view_island[cur] = MetalIsland::PRETTY_PIPES[view_island[cur].to_sym]
+  # poss_insides.each do |ni|
+  #   if !route_set.include?(ni)
+  #     insides << ni
+  #   end
+  #   view_island[ni] = "I"
+  # end
+  # puts "-------------------"
+  # p poss_insides
+  # p view_island
+  # gets
+
 end
 
 # Flood fill from each inside tile
