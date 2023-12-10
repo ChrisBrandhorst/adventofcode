@@ -54,11 +54,12 @@ route_poss = Set.new(route)
 # Trace inside along route
 # ⚠️ ASSUMPTION
 poss_insides = [[animal_start[0]-1, animal_start[1]]]
+# poss_insides = [[animal_start[0], animal_start[1]-1]]
 insides = Set.new
-ADJ_T = 0; ADJ_TR = 1; ADJ_R = 2; ADJ_BR = 3; ADJ_B = 4; ADJ_BL = 5; ADJ_L = 6; ADJ_TL = 7
+CORNERS = {"7": 1, "J": 3, "L": 5, "F": 7}
 
+lpi = poss_insides.last
 route.each_cons(2) do |prev,cur|
-  lpi = poss_insides.last
   new_poss_insides = []
   cx, cy = cur
   dx, dy = cx - prev[0], cy - prev[1]
@@ -75,39 +76,26 @@ route.each_cons(2) do |prev,cur|
     [cx,cy-1]     # 8 T
   ]
 
-  case island[cur]
-  when "7" # TR 1
-    if dy == 0
-      new_poss_insides = adj_coords[ADJ_TR-1,3]         if lpi == adj_coords[(ADJ_TR - 2) % 8]
-    else
-      new_poss_insides = adj_coords[ADJ_TR-1,3].reverse if lpi == adj_coords[(ADJ_TR + 2) % 8]
-    end
+  dir = 0
+  case tile = island[cur]
   when "|"
     new_poss_insides << [lpi[0],lpi[1]+dy]
-  when "J" # BR 3
-    if dx == 0
-      new_poss_insides = adj_coords[ADJ_BR-1,3]         if lpi == adj_coords[(ADJ_BR - 2) % 8]
-    else
-      new_poss_insides = adj_coords[ADJ_BR-1,3].reverse if lpi == adj_coords[(ADJ_BR + 2) % 8]
-    end
   when "-"
     new_poss_insides << [lpi[0]+dx,lpi[1]]
-  when "L" # BL 5
-    if dy == 0
-      new_poss_insides = adj_coords[ADJ_BL-1,3]         if lpi == adj_coords[(ADJ_BL - 2) % 8]
-    else
-      new_poss_insides = adj_coords[ADJ_BL-1,3].reverse if lpi == adj_coords[(ADJ_BL + 2) % 8]
+  else
+    case tile
+    when "7"; dir = -dx
+    when "J"; dir = -dy
+    when "L"; dir = dx
+    when "F"; dir = dy
     end
-  when "F" #TL 7
-    if dx == 0
-      new_poss_insides = adj_coords[ADJ_TL-1,3]         if lpi == adj_coords[(ADJ_TL - 2) % 8]
-    else
-      new_poss_insides = adj_coords[ADJ_TL-1,3].reverse if lpi == adj_coords[(ADJ_TL + 2) % 8]
-    end
-
+    # puts "#{dir} #{dx} #{dy}"
+    i = CORNERS[tile.to_sym]
+    new_poss_insides = adj_coords[i-1,3] if lpi == adj_coords[(i + 2 * dir) % 8]
   end
 
   new_poss_insides << prev if new_poss_insides.empty?
+  lpi = new_poss_insides[dir]
 
   new_poss_insides.each{ |ni| insides << ni if !route_poss.include?(ni) }
   poss_insides += new_poss_insides
