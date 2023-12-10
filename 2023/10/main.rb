@@ -22,6 +22,9 @@ class MetalIsland < Grid
     poss
   end
 
+  def pretty
+  end
+
 end
 
 
@@ -52,15 +55,14 @@ route = [] +
 route_poss = Set.new(route)
 
 # Trace inside along route
-# ⚠️ ASSUMPTION
-poss_insides = [[animal_start[0]-1, animal_start[1]]]
-# poss_insides = [[animal_start[0], animal_start[1]-1]]
 insides = Set.new
 CORNERS = {"7": 1, "J": 3, "L": 5, "F": 7}
+# ⚠️ ASSUMPTION
+lpi = [animal_start[0]-1, animal_start[1]]
 
-lpi = poss_insides.last
 route.each_cons(2) do |prev,cur|
-  new_poss_insides = []
+
+  poss_insides = []
   cx, cy = cur
   dx, dy = cx - prev[0], cy - prev[1]
 
@@ -79,29 +81,29 @@ route.each_cons(2) do |prev,cur|
   dir = 0
   case tile = island[cur]
   when "|"
-    new_poss_insides << [lpi[0],lpi[1]+dy]
+    poss_insides << [lpi[0],lpi[1]+dy]
   when "-"
-    new_poss_insides << [lpi[0]+dx,lpi[1]]
+    poss_insides << [lpi[0]+dx,lpi[1]]
   else
     case tile
-    when "7"; dir = -dx
-    when "J"; dir = -dy
-    when "L"; dir = dx
-    when "F"; dir = dy
+    when '7', 'L', 1, 5; dir = dy == -1 ? 1 : -1
+    when 'J', 'F', 3, 7; dir = dx == -1 ? 1 : -1
     end
-    # puts "#{dir} #{dx} #{dy}"
     i = CORNERS[tile.to_sym]
-    new_poss_insides = adj_coords[i-1,3] if lpi == adj_coords[(i + 2 * dir) % 8]
+    poss_insides = adj_coords[i-1,3] if lpi == adj_coords[(i + 2 * dir) % 8]
   end
 
-  new_poss_insides << prev if new_poss_insides.empty?
-  lpi = new_poss_insides[dir]
+  if poss_insides.empty?
+    poss_insides << prev
+    lpi = prev
+  else
+    lpi = poss_insides[dir]
+  end
 
-  new_poss_insides.each{ |ni| insides << ni if !route_poss.include?(ni) }
-  poss_insides += new_poss_insides
+  poss_insides.each{ |ni| insides << ni if !route_poss.include?(ni) }
 end
 
-
+# Flood fill from each inside tile
 stack = insides.to_a
 until stack.empty?
   ri = stack.shift
@@ -114,8 +116,6 @@ end
 
 part2 = insides.size
 puts "Part 2: #{part2} (#{Time.now - start}s)"
-
-
 
 # route_poss.each{ |c| island[c] = MetalIsland::PRETTY_PIPES[island[c].to_sym] }
 # insides.each{ |c| island[c] = "I" }
