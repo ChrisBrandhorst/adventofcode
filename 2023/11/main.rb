@@ -1,13 +1,12 @@
-require '../util/grid'
-
 start = Time.now
 input = File.readlines("input", chomp: true).map(&:chars)
 
-space = Grid.new(input)
-galaxies = space.inject([]){ |g,c,v| g << c if v == "#"; g }
+galaxies = (0...input.size).inject([]) do |g,y|
+  g + (0...input[y].size).filter_map{ |x| [x,y] if input[y][x] == "#" }
+end
 
-@empty_cols_idx = input.transpose.each_with_index.map{ |v,i| v.uniq.size == 1 ? i : nil }.compact
-@empty_rows_idx = input.each_with_index.map{ |v,i| v.uniq.size == 1 ? i : nil }.compact
+@empty_cols_idx = input.transpose.each_with_index.filter_map{ |v,i| v.uniq.size == 1 ? i : nil }
+@empty_rows_idx = input.each_with_index.filter_map{ |v,i| v.uniq.size == 1 ? i : nil }
 
 puts "Prep: #{Time.now - start}s"
 
