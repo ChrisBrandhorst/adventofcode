@@ -5,8 +5,8 @@ galaxies = (0...input.size).inject([]) do |g,y|
   g + (0...input[y].size).filter_map{ |x| [x,y] if input[y][x] == "#" }
 end
 
-@empty_cols_idx = input.transpose.each_with_index.filter_map{ |v,i| v.uniq.size == 1 ? i : nil }
-@empty_rows_idx = input.each_with_index.filter_map{ |v,i| v.uniq.size == 1 ? i : nil }
+@empty_cols_idx = input.transpose.each_with_index.filter_map{ |v,i| i if v.uniq.size == 1 }
+@empty_rows_idx = input.each_with_index.filter_map{ |v,i| i if v.uniq.size == 1 }
 
 puts "Prep: #{Time.now - start}s"
 
