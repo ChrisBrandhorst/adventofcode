@@ -3,7 +3,6 @@ input = File.readlines("input", chomp: true)
   .map{ r = _1.split; [r.first,r.last.split(",").map(&:to_i)] }
 puts "Prep: #{Time.now - start}s"
 
-
 def run(row, groups, row_i = 0, group_i = 0, group_len = 0, brk_group_len = 0)
   c = row[row_i]
   ret = 0
@@ -12,8 +11,7 @@ def run(row, groups, row_i = 0, group_i = 0, group_len = 0, brk_group_len = 0)
     row[row_i,row.size-row_i],
     groups,
     group_i,
-    group_len,
-    brk_group_len
+    group_len
   ]
   if mem_val = @mem[mem_key]
     return mem_val
@@ -44,7 +42,7 @@ start = Time.now
 part1 = input.sum{ |s,g| run(s.chars, g) }
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
-
+@mem_hits = 0
 start = Time.now
 @mem = {}
 part2 = input.sum{ |s,g| run( ([s]*5).join("?").chars , g*5 ) }
