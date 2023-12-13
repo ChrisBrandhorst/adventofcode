@@ -1,6 +1,3 @@
-require '../util/grid'
-
-
 start = Time.now
 input = File.read("input").split("\n\n").map(&:split).map do |inp|
   grid = inp.map(&:chars)
