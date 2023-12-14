@@ -11,10 +11,6 @@ class Platform < Grid
     @north_load_hist = []
   end
 
-  def north_load
-    self.inject(0){ |l,(x,y),v| l + (v == "O" ? self.row_count - y : 0) }
-  end
-
   def tilt!(dir = [0,1])
     dx, dy = dir
     last_rock = {}
