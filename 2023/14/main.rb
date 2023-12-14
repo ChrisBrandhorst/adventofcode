@@ -60,14 +60,10 @@ puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
 def find_pattern(arr)
-  (2..arr.size).to_a.reverse.each do |pl|
-    (0..arr.size-pl).each do |i|
-      occs = [i]
-      pat = arr[i,pl]
-      (i+1..arr.size-pl).each do |j|
-        occs << j if arr[j,pl] == pat
-        return [arr[occs.first,occs.last-occs.first], occs.first] if occs.size == 2
-      end
+  (2..arr.size).to_a.reverse.each do |l|
+    arr.each_cons(l).each_with_index do |pat,i|
+      j = (i+1..arr.size-l).detect{ |j| arr[j,l] == pat }
+      return [arr[i,j-i], i] if j
     end
   end
 end
@@ -75,9 +71,7 @@ end
 
 start = Time.now
 platform = Platform.new(input)
-until platform.north_load_hist.tally.values.max == 6
-  nload = platform.tilt_cycle!
-end
+platform.tilt_cycle! until platform.north_load_hist.tally.values.max == 6
 pattern, pattern_start = find_pattern(platform.north_load_hist)
 part2 = pattern[ (1000000000 - pattern_start) % pattern.size - 1 ]
 puts "Part 2: #{part2} (#{Time.now - start}s)"
