@@ -60,9 +60,10 @@ puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 
 def find_pattern(arr)
-  (2..arr.size).to_a.reverse.each do |l|
-    arr.each_cons(l).each_with_index do |pat,i|
-      j = (i+1..arr.size-l).detect{ |j| arr[j,l] == pat }
+  half_arr = arr[0..arr.size/2]
+  half_arr.size.downto(2).each do |l|
+    half_arr.each_cons(l).each_with_index do |pat,i|
+      j = (i+1..arr.size-l).detect{ arr[_1,l] == pat }
       return [arr[i,j-i], i] if j
     end
   end
