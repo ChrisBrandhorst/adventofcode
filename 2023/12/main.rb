@@ -42,7 +42,6 @@ start = Time.now
 part1 = input.sum{ |s,g| run(s.chars, g) }
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
-@mem_hits = 0
 start = Time.now
 @mem = {}
 part2 = input.sum{ |s,g| run( ([s]*5).join("?").chars , g*5 ) }
