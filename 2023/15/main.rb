@@ -14,24 +14,22 @@ puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 start = Time.now
 
-boxes = []
-input.each do |s|
+boxes = input.inject({}) do |bxs,s|
   label, focal = s.split(/[=-]/)
-  box = (boxes[hash(label)] ||= [])
-  
+  box = (bxs[hash(label)] ||= [])
+  pos = box.index{ |l,f| l == label }
+
   if focal.nil?
-    box.delete_if{ |l,f| l == label }
+    box.delete_at(pos) if pos
   else
-    focal = focal.to_i
-    if existing = box.detect{ |l,f| l == label }
-      existing[1] = focal
+    if pos
+      box[pos][1] = focal
     else
       box << [label,focal]
     end
   end
+  bxs
 end
 
-part2 = boxes.each_with_index.sum do |box,i|
-  (box || []).each_with_index.sum{ |(l,f),j| (i+1) * (j+1) * f }
-end
+part2 = boxes.sum{ |i,box| box.each_with_index.sum{ |(l,f),j| (i+1) * (j+1) * f.to_i } }
 puts "Part 2: #{part2} (#{Time.now - start}s)"
