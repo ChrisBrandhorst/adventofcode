@@ -96,6 +96,11 @@ class Grid
     t
   end
 
+  def within?(x, y = nil)
+    x, y = *x if x.is_a?(Array)
+    x >= 0 && x < @col_count && y >= 0 && y < @row_count
+  end
+
   def flatten
     @rows.flatten
   end
