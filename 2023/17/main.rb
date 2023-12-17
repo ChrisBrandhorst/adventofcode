@@ -35,7 +35,7 @@ class City < Grid
   end
 
   def as_heuristic(from, to)
-    (from[0][0] - to[0][0]).abs + (from[0][1] - to[0][1]).abs
+    to[0][0] - from[0][0] + to[0][1] - from[0][1]
   end
 
   def as_distance(from, to)
