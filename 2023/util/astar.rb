@@ -18,15 +18,11 @@ module AStar
 
       if self.as_at_goal?(current, goal)
         total_path = [current]
-        while cameFrom.keys.include?(current)
-          current = cameFrom[current]
-          total_path << current
-        end
+        total_path << current while current = cameFrom[current]
         return total_path.reverse
       end
 
       self.as_seen(current)
-
       self.as_neighbours(current).each do |neighbour|
         next if self.as_seen?(neighbour)
         tentative_gScore = gScore[current] + self.as_distance(current, neighbour)
