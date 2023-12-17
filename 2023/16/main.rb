@@ -13,7 +13,7 @@ def energize!(contrap, start_pos, start_dir)
   energized = []
 
   until beams.empty?
-    pos, dir = beams.pop
+    pos, dir = beam = beams.pop
     next if !contrap.within?(pos)
     energized << pos
     (posx, posy), (dirx, diry) = pos, dir
@@ -24,10 +24,10 @@ def energize!(contrap, start_pos, start_dir)
     else
       case tile
       when "/"
-        ndir = dir.reverse.map{_1*-1}
+        ndir = [-dir[1],-dir[0]]
         nba = [[posx+ndir[0],posy+ndir[1]],ndir]
       when "\\"
-        ndir = dir.reverse
+        ndir = [dir[1],dir[0]]
         nba = [[posx+ndir[0],posy+ndir[1]],ndir]
       when "|"
         nba = [[posx,posy-1],[0,-1]]
