@@ -18,7 +18,7 @@ def dig(instructions)
     a + ((ya+yb) / 2) * (xa-xb)
   end
   
-  area + edge_length / 2 + 1
+  area.abs + edge_length / 2 + 1
 end
 
 
