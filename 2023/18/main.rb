@@ -4,20 +4,21 @@ puts "Prep: #{Time.now - start}s"
 
 
 def dig(instructions)
-  edge_length = 0
+  edge_length, cur = 0, [0,0]
 
-  vertices = instructions.inject([[0,0]]) do |vs,(dir,el)|
+  area = instructions.inject(0) do |a,(dir,el)|
+    xa, ya = cur
+    xb, yb = cur = case dir
+      when 'U'; [xa, ya-el]
+      when 'R'; [xa+el, ya]
+      when 'D'; [xa, ya+el]
+      when 'L'; [xa-el, ya]
+    end
     edge_length += el
-    cur = vs.last
-    vs << case dir
-      when 'U'; [cur[0],cur[1]-el]
-      when 'R'; [cur[0]+el,cur[1]]
-      when 'D'; [cur[0],cur[1]+el]
-      when 'L'; [cur[0]-el,cur[1]]
-      end
+    a + ((ya+yb) / 2) * (xa-xb)
   end
   
-  vertices.each_cons(2).sum{ |(xa,ya),(xb,yb)| ((ya+yb) / 2) * (xa-xb) } + edge_length / 2 + 1
+  area + edge_length / 2 + 1
 end
 
 
