@@ -59,7 +59,6 @@ puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 start = Time.now
 
-# Calculate route
 route = [] +
   circle.first +
   circle[1,circle.size-2].map(&:first) +
@@ -67,64 +66,12 @@ route = [] +
   circle[1,circle.size-2].map(&:last).reverse
 route_set = Set.new(route)
 
-# Trace inside along route
-insides = Set.new
-CORNERS = {"7": 1, "J": 3, "L": 5, "F": 7}
-
-# ⚠️ Pick interior
-lpi = [animal_start[0], animal_start[1]-1]
-
-# Get direction of route
-first_c = island.detect{ |c,v| v == "F" && route_set.include?(c) }.first
-second_c = route[route.index(first_c) + 1]
-clock = second_c[0] > first_c[0] ? -1 : 1
-
-route.each_cons(2) do |prev,cur|
-
-  poss_insides = []
-  cx, cy = cur
-  dx, dy = cx - prev[0], cy - prev[1]
-  adj_coords = island.adj_coords_loop(cx, cy)
-
-  dir = 0
-  case tile = island[cur]
-  when "|"
-    poss_insides << [lpi[0],lpi[1]+dy]
-  when "-"
-    poss_insides << [lpi[0]+dx,lpi[1]]
-  else
-    case tile
-    when '7', 'L', 1, 5; dir = dy == -1 ? 1 : -1
-    when 'J', 'F', 3, 7; dir = dx == -1 ? 1 : -1
-    end
-    i = CORNERS[tile.to_sym]
-    poss_insides = adj_coords[i-1,3] if lpi == adj_coords[(i + 2 * dir * clock) % 8]
-  end
-
-  if poss_insides.empty?
-    poss_insides << prev
-    lpi = prev
-  else
-    lpi = poss_insides[dir]
-  end
-
-  poss_insides.each{ |ni| insides << ni if !route_set.include?(ni) }
+cur = route.last
+area = route.inject(0) do |a,c|
+  xa, ya = cur
+  xb, yb = cur = c
+  a + ((ya+yb) / 2) * (xa-xb)
 end
 
-# Flood fill from each inside tile
-stack = insides.to_a
-until stack.empty?
-  island.each_adj(stack.shift) do |c,v|
-    next if route_set.include?(c) || insides.include?(c)
-    insides << c
-    stack << c
-  end
-end
-
-part2 = insides.size
+part2 = area.abs - route.size / 2 + 1
 puts "Part 2: #{part2} (#{Time.now - start}s)"
-
-
-# route_set.each{ |c| island[c] = MetalIsland::PRETTY_PIPES[island[c].to_sym] }
-# insides.each{ |c| island[c] = "I" }
-# p island
