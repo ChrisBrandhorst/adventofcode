@@ -1,24 +1,15 @@
 start = Time.now
 input = File.read("input", chomp: true).split("\n\n").map{ _1.split }
 
-workflows = input.first.map {
-  acc = _1.index("{")
-  rules = _1[acc+1..._1.size-1].split(",").map { |r|
-    caps = r.match(/(\w)(\>|\<)(\d+):([A-Za-z]+)/)
-    if caps
-      ret = caps.captures
-      ret[1] = ret[1] == ">" ? 0 : -1
-      ret[2] = ret[2].to_i
-      ret
-    else
-      r
-    end
-  }
-  [_1[0,acc], rules]
+workflows = input.first.map { |l|
+  rules = l.split(/[{,}]/)
+  (1..rules.size-2).each do |i|
+    r = rules[i].match(/(\w)([<>])(\d+):([AR]|\w+)/).captures
+    rules[i] = [r[0], r[1] == ">" ? 0 : -1, r[2].to_i, r[3]]
+  end
+  [rules.shift, rules]
 }.to_h
-
-parts = input.last.map{ _1.scan(/(\w=\d+)/).map{ |l| l = l.first.split("="); [l[0],l[1].to_i] }.to_h }
-
+parts = input.last.map{ _1.scan(/(\w)=(\d+)/).map{ |l| [l[0],l[1].to_i] }.to_h }
 puts "Prep: #{Time.now - start}s"
 
 
