@@ -3,10 +3,16 @@ input = File.read("input", chomp: true).split("\n\n").map{ _1.split }
 
 workflows = input.first.map {
   acc = _1.index("{")
-  rules = _1[acc+1..._1.size-1].split(",")
-  rules = rules.map { |r|
+  rules = _1[acc+1..._1.size-1].split(",").map { |r|
     caps = r.match(/(\w)(\>|\<)(\d+):([A-Za-z]+)/)
-    caps ? caps.captures : r
+    if caps
+      ret = caps.captures
+      ret[1] = ret[1] == ">" ? 0 : -1
+      ret[2] = ret[2].to_i
+      ret
+    else
+      r
+    end
   }
   [_1[0,acc], rules]
 }.to_h
@@ -15,38 +21,24 @@ parts = input.last.map{ _1.scan(/(\w=\d+)/).map{ |l| l = l.first.split("="); [l[
 
 puts "Prep: #{Time.now - start}s"
 
-start = Time.now
 
+start = Time.now
 
 accepted = parts.select do |part|
   wfk = "in"
   accept = nil
 
   while accept.nil?
-    wf = workflows[wfk]
-    wf.detect do |r|
-      nxt = nil
+    workflows[wfk].detect do |r|
       if r.is_a?(Array)
         prop, comp, val, goto = r
-        ok = (part[prop].to_i < val.to_i && comp == "<") || (part[prop].to_i > val.to_i && comp == ">")
-        nxt = goto if ok
+        wfk = (part[prop] < val) ^ (comp == 0) ? goto : nil
       else
-        nxt = r
+        wfk = r
       end
-
-      if nxt == "A"
-        accept = true
-      elsif nxt == "R"
-        accept = false
-        true
-      elsif nxt
-        wfk = nxt
-      else
-        false
-      end
-
+      accept = wfk == "A" ? true : (wfk == "R" ? false : nil)
+      !accept.nil? || wfk
     end
-
   end
 
   accept
@@ -55,57 +47,40 @@ end
 part1 = accepted.map(&:values).flatten.sum
 puts "Part 1: #{part1} (#{Time.now - start}s)"
 
+
 start = Time.now
 
 queue = [{
   "wf" => "in",
-  "x" => (1..4000),
-  "m" => (1..4000),
-  "a" => (1..4000),
-  "s" => (1..4000)
+  "x" => (1..4000), "m" => (1..4000),
+  "a" => (1..4000), "s" => (1..4000)
 }]
+
 accepted = []
-
-def new_part(old_part, goto, prop, range)
-  {
-    "wf" => goto,
-    "x" => prop == "x" ? range : old_part["x"].clone,
-    "m" => prop == "m" ? range : old_part["m"].clone,
-    "a" => prop == "a" ? range : old_part["a"].clone,
-    "s" => prop == "s" ? range : old_part["s"].clone
-  }
-end
-
 while part = queue.pop
-  workflows[part["wf"]].each do |r|
+  wfk = part["wf"]
+  accepted << part if wfk == "A"
+  next if !workflows.key?(wfk)
 
+  workflows[wfk].each do |r|
     if r.is_a?(Array)
-      prop, comp, val, goto = r
-      val = val.to_i
+      prop, cutd, val, goto = r
 
-      if comp == "<"
-        part_to_wf = new_part(part, goto, prop, (part[prop].begin..val-1) )
-        part[prop] = (val..part[prop].end)
-      elsif comp == ">"
-        part_to_wf = new_part(part, goto, prop, (val+1..part[prop].end))
-        part[prop] = (part[prop].begin..val)
-      end
+      cuti = val + cutd
+      split_rng, cont_rng = (part[prop].begin..cuti), (cuti+1..part[prop].end)
+      split_rng, cont_rng = cont_rng, split_rng if cutd == 0
 
-      if part_to_wf["wf"] == "A"
-        accepted << part_to_wf
-      elsif part_to_wf["wf"] != "R"
-        queue.unshift(part_to_wf)
-      end
+      part[prop] = cont_rng
 
-    elsif r == "A"
-      accepted << part
-    elsif r != "R"
+      split_part = part.clone
+      split_part["wf"] = goto
+      split_part[prop] = split_rng
+      queue.unshift(split_part)
+    else
       part["wf"] = r
       queue.unshift(part)
     end
-
   end
-
 end
 
 part2 = accepted.sum{ |a| a["x"].size * a["m"].size * a["a"].size * a["s"].size }
