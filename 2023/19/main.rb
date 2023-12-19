@@ -16,19 +16,19 @@ puts "Prep: #{Time.now - start}s"
 start = Time.now
 
 accepted = parts.select do |part|
-  wfk = "in"
+  wf = "in"
   accept = nil
 
   while accept.nil?
-    workflows[wfk].detect do |r|
+    workflows[wf].detect do |r|
       if r.is_a?(Array)
-        prop, comp, val, goto = r
-        wfk = (part[prop] < val) ^ (comp == 0) ? goto : nil
+        prp, cutd, val, goto = r
+        wf = (part[prp] < val) ^ (cutd == 0) ? goto : nil
       else
-        wfk = r
+        wf = r
       end
-      accept = wfk == "A" ? true : (wfk == "R" ? false : nil)
-      !accept.nil? || wfk
+      accept = wf == "A" ? true : (wf == "R" ? false : nil)
+      !accept.nil? || wf
     end
   end
 
@@ -41,38 +41,33 @@ puts "Part 1: #{part1} (#{Time.now - start}s)"
 
 start = Time.now
 
-queue = [{
-  "wf" => "in",
-  "x" => (1..4000), "m" => (1..4000),
-  "a" => (1..4000), "s" => (1..4000)
-}]
+queue = [[
+  "in", {
+    "x" => (1..4000), "m" => (1..4000),
+    "a" => (1..4000), "s" => (1..4000)
+  }
+]]
 
 accepted = []
-while part = queue.pop
-  wfk = part["wf"]
-  accepted << part if wfk == "A"
-  next if !workflows.key?(wfk)
+while (wf, props = queue.pop)
+  accepted << props if wf == "A"
+  next if !workflows.key?(wf)
 
-  workflows[wfk].each do |r|
+  workflows[wf].each do |r|
     if r.is_a?(Array)
-      prop, cutd, val, goto = r
-
+      prp, cutd, val, goto = r
       cuti = val + cutd
-      split_rng, cont_rng = (part[prop].begin..cuti), (cuti+1..part[prop].end)
+
+      split_rng, cont_rng = (props[prp].begin..cuti), (cuti+1..props[prp].end)
       split_rng, cont_rng = cont_rng, split_rng if cutd == 0
 
-      part[prop] = cont_rng
-
-      split_part = part.clone
-      split_part["wf"] = goto
-      split_part[prop] = split_rng
-      queue.unshift(split_part)
+      props[prp] = cont_rng
+      queue.unshift([goto,props.merge(prp => split_rng)])
     else
-      part["wf"] = r
-      queue.unshift(part)
+      queue.unshift([r,props])
     end
   end
 end
 
-part2 = accepted.sum{ |a| a["x"].size * a["m"].size * a["a"].size * a["s"].size }
+part2 = accepted.sum{ _1.values.map(&:size).inject(&:*) }
 puts "Part 2: #{part2} (#{Time.now - start}s)"
