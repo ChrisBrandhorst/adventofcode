@@ -13,9 +13,9 @@ def build_modules(input)
     mods
   end
 
-  modules.clone.each do |n,m|
-    m[:targets].each do |t|
-      modules[t] = {type: :output, targets: [], mem: {}} if !modules.key?(t)
+  modules.keys.each do |n|
+    modules[n][:targets].each do |t|
+      modules[t] ||= {type: :output, targets: []}
       (modules[t][:mem] ||= {})[n] = false if modules[t][:type] == :&
     end
   end
