@@ -96,6 +96,14 @@ class Grid
     t
   end
 
+  def detect(&block)
+    (0...@row_count).detect do |y|
+      (0...@col_count).detect do |x|
+        return [x,y] if block_given? && yield([x,y], self[x,y])
+      end
+    end
+  end
+
   def within?(x, y = nil)
     x, y = *x if x.is_a?(Array)
     x >= 0 && x < @col_count && y >= 0 && y < @row_count
