@@ -33,12 +33,15 @@ class Karger
       end
     end
 
-    (0...@edges.size).inject(0) do |a,i|
+    (0...@edges.size).inject(0) do |ans,i|
       edge = @edges[i]
-      set1, set2 = find(edge.first), find(edge.last)
-      set1 != set2 ? a + 1 : a
+      find(edge.first) != find(edge.last) ? ans + 1 : ans
     end
 
+  end
+ 
+  def find(node)
+    node == @parent[node] ? node : @parent[node] = find(@parent[node])
   end
 
   def union(u,v)
@@ -48,10 +51,6 @@ class Karger
       @parent[v] = u
       @rank[u] += 1 if @rank[u] == @rank[v]
     end
-  end
- 
-  def find(node)
-    node == @parent[node] ? node : @parent[node] = find(@parent[node])
   end
 
   def get_cut_sets
