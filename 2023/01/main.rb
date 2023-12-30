@@ -1,4 +1,4 @@
-INT_NAMES = %w"one two three four five six seven eight nine"
+INT_NAMES = %w"- one two three four five six seven eight nine"
 
 class String
   def is_int?
@@ -7,11 +7,11 @@ class String
 
   def get_int_at(i)
     c = self[i]
-    c.is_int? ? c : ((s = INT_NAMES.index{ self[i,_1.size] == _1 }) ? s + 1 : nil)
+    c.is_int? ? c : INT_NAMES.index{ self[i,_1.size] == _1 }
   end
 
   def get_all_ints
-    (0...self.size).inject([]){ |r,i| r << self.get_int_at(i); r }.compact
+    (0...self.size).map(&method(:get_int_at)).compact
   end
 end
 
@@ -34,7 +34,7 @@ puts "Part 2: #{part2} (#{Time.now - start}s)"
 start = Time.now
 part2 = input.sum do |l|
   first, last = nil
-  (0...l.size).each do |i|
+  0.upto(l.size) do |i|
     first ||= l.get_int_at(i)
     last ||= l.get_int_at(l.size-i-1)
     break if first && last
