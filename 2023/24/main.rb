@@ -15,7 +15,7 @@ input.each do |stone|
 end
 
 area = (200000000000000..400000000000000)
-part1 = input.combination(2).filter_map.count do |(pva,dva,(a,c)),(pvb,dvb,(b,d))|
+part1 = input.combination(2).count do |(pva,dva,(a,c)),(pvb,dvb,(b,d))|
   x = (d-c) / (a-b)
   y = a * (d-c)/(a-b) + c
   future = (x >= pva[0]) ^ (dva[0] < 0) && (x >= pvb[0]) ^ (dvb[0] < 0)
