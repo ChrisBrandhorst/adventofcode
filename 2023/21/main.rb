@@ -62,7 +62,10 @@ size = gardens.row_count
 sizec = size / 2
 
 # Get three points
-ys = walk(gardens, spos, sizec + size * 2).values_at(sizec, sizec + size, sizec + size * 2)
+xs = [sizec, sizec + size, sizec + size * 2]
+puts "Calculating for steps: #{xs.join(', ')}"
+ys = walk(gardens, spos, xs.last).values_at(*xs)
+puts "Got three points: #{xs.zip(ys).map{"(#{_1.join(',')})" }.join(", ")}"
 
 # Define a, b and c
 a = (ys[0] - 2*ys[1] + ys[2]) / 2;
@@ -74,30 +77,3 @@ puts "Formula is: #{a}x² + #{b}x + #{c}"
 x = STEPS / size
 part2 = a*x**2 + b*x + c
 puts "Part 2: #{part2} (#{Time.now - start}s)"
-
-
-
-
-
-
-
-
-
-
-
-# poss = Set.new([spos])
-# 0.step do |i|
-#   p gardens
-#   puts "Step #{i}: #{poss.size} positions"
-#   gets
-#   poss = poss.inject(Set.new) do |ps,c|
-#     gardens[c] = "."
-#     gardens.each_adj(c) do |ac,v|
-#       if v != "#"
-#         ps << ac
-#         gardens[ac] = "O"
-#       end
-#     end
-#     ps
-#   end
-# end
