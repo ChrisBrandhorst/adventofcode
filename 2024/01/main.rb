@@ -2,7 +2,9 @@ require_relative '../util/time'
 
 def prep
   File.readlines("input", chomp: true)
-    .map{ _1.split.map(&:to_i) }.transpose.map(&:sort)
+    .map{ _1.split.map(&:to_i) }
+    .transpose
+    .map(&:sort)
 end
 
 def part1(input)

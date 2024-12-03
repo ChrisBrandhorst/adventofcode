@@ -1,7 +1,8 @@
 require_relative '../util/time'
 
 def prep
-  File.readlines("input", chomp: true).map{ _1.split.map(&:to_i) }
+  File.readlines("input", chomp: true)
+    .map{ _1.split.map(&:to_i) }
 end
 
 def is_safe?(report)
