@@ -96,6 +96,16 @@ class Grid
     t
   end
 
+  def select(&block)
+    selected = []
+    (0...@row_count).each do |y|
+      (0...@col_count).each do |x|
+        selected << [[x,y], self[x,y]] if block_given? && yield([x,y], self[x,y])
+      end
+    end
+    selected
+  end
+
   def detect(&block)
     (0...@row_count).detect do |y|
       (0...@col_count).detect do |x|
@@ -115,6 +125,10 @@ class Grid
 
   def inspect
     @rows.map{ |r| r.join("") }.join("\n")
+  end
+
+  def self.add(c, d)
+    [c[0] + d[0], c[1] + d[1]]
   end
 
 end

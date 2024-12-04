@@ -1,13 +1,7 @@
 digits = File.read("input").chars.map(&:to_i)
 
-sum = 0
-digits.each_with_index do |d,i|
-  sum += d if d == digits[i - 1]
-end
-puts "Part 1: #{sum}"
+part1 = ([digits.last] + digits).each_cons(2).select{ _1 == _2 }.sum(&:first)
+puts "Part 1: #{part1}"
 
-sum2 = 0
-digits.each_with_index do |d,i|
-  sum2 += d if d == digits[i - digits.size / 2]
-end
-puts "Part 2: #{sum2}"
+part2 = digits.each_with_index.inject(0){ |s,(v,i)| s + (v == digits[i - digits.size / 2] ? v : 0) }
+puts "Part 2: #{part2}"

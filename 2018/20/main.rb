@@ -178,8 +178,8 @@ def build(area, path, x, y, steps)
 
   $paths << steps
 
-  $DEBUG = true if pointer == 10221 && x == 89 && y == 5
-  $DEBUG = false if pointer == 6 && x == 107 && y == 17
+  # $DEBUG = true if pointer == 10221 && x == 89 && y == 5
+  # $DEBUG = false if pointer == 6 && x == 107 && y == 17
 
   [x, y]
 end
@@ -187,6 +187,7 @@ end
 
 build(area, data, 1, 1, 0)
 area.unknown_to_wall!
+puts area
 
-p $paths.max
+puts "Part 1: #{$paths.max}"
 # p $paths.count{ |p| p >= 1000 }

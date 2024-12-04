@@ -49,8 +49,8 @@ data = lines.map{ |l| l.match(/([a-z]+) (\d+) (\d+) (\d+)/){ |m|
 
 def run(data, register, ip_reg, ip)
   0.step do |i|
-    p ip
-    p register
+    # p ip
+    # p register
     register[ip_reg] = ip
     op = data[ip]
     op.run!(register)
@@ -65,11 +65,11 @@ def run2(data, register, ip_reg, ip)
   0.step do |i|
 
     if ip == 3
-      puts "------------------"
-      p register
+      # puts "------------------"
+      # p register
       if register[5] % register[1] == 0
         if register[1] <= 1
-          p "A"
+          # p "A"
           register[4] = register[5] / register[1]
           register[3] = register[5]
         # else
@@ -78,9 +78,9 @@ def run2(data, register, ip_reg, ip)
         end
       else
         register[3] = register[5]
-        p "B"
+        # p "B"
       end
-      p register
+      # p register
     end
 
     register[ip_reg] = ip
@@ -95,4 +95,4 @@ def run2(data, register, ip_reg, ip)
 end
 
 p run2(data, [0] * 6, ip_reg, 0)
-# p run2(data, [1, 0, 0, 0, 0, 0], ip_reg, 0)
+p run2(data, [1, 0, 0, 0, 0, 0], ip_reg, 0)
