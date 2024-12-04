@@ -3,33 +3,20 @@ require_relative '../util/grid'
 
 def prep
   input = File.readlines("input", chomp: true).map(&:chars)
-  grid = Grid.new(input)
-  grid.with_diag!
-  grid
+  Grid.new(input, true)
 end
 
-def part1(grid)
-  
-  deltas = [
-    [0, -1],
-    [1, -1],
-    [1, 0],
-    [1, 1],
-    [0, 1],
-    [-1, 1],
-    [-1, 0],
-    [-1, -1]
-  ]
+def part1(grid)  
+  deltas = [1,0,-1].repeated_permutation(2).to_a - [[0,0]]
+  chars = "MAS".chars
 
-  options = []
-  grid.each do |c,v|
-    deltas.each{ options << {:c => c, :d => _1} } if v == "X"
-  end
-
-  options.count do |opt|
-    "MAS".chars.inject(true) do |r,v|
-      opt[:c] = Grid.add(opt[:c], opt[:d])
-      grid[opt[:c]] != v ? (break false) : true
+  grid.select("X").sum do |c|
+    deltas.count do |d|
+      cc = c
+      chars.all? do |v|
+        cc = Grid.add(cc, d)
+        grid[cc] == v
+      end
     end
   end
 
@@ -38,14 +25,12 @@ end
 def part2(grid)
 
   deltas = [
-    [1, -1],
-    [1, 1],
-    [-1, 1],
-    [-1, -1]
+    [1, -1], [1, 1],
+    [-1, 1], [-1, -1]
   ]
   orders = ["SSMM", "SMMS", "MMSS", "MSSM"]
 
-  grid.select{ _2 == "A" }.count do |c, v|
+  grid.select("A").count do |c|
     corners = deltas.map{ grid[Grid.add(c, _1)] }
     orders.include?(corners.join)
   end

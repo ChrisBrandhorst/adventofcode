@@ -2,11 +2,11 @@ class Grid
 
   attr_reader :row_count, :col_count
 
-  def initialize(rows)
+  def initialize(rows, with_diag = false)
     @rows = rows
     @row_count = @rows.size
     @col_count = @rows.map(&:size).max
-    @with_diag = false
+    @with_diag = with_diag
   end
 
   def with_diag!
@@ -96,11 +96,15 @@ class Grid
     t
   end
 
-  def select(&block)
+  def select(t = nil, &block)
     selected = []
     (0...@row_count).each do |y|
       (0...@col_count).each do |x|
-        selected << [[x,y], self[x,y]] if block_given? && yield([x,y], self[x,y])
+        if block_given? && yield([x,y], self[x,y])
+          selected << [[x,y], self[x,y]]
+        elsif !t.nil? && self[x,y] == t
+          selected << [x,y]
+        end
       end
     end
     selected
