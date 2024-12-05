@@ -1,12 +1,9 @@
 require_relative '../util/time'
 
 def prep
-  input = File.read("input", chomp: true)
+  rules, updates = File.read("input", chomp: true)
     .split("\n\n")
-    .map{ _1.split("\n") }
-
-  rules = input.first.map{ _1.split("|").map(&:to_i) }
-  updates = input.last.map{ _1.split(",").map(&:to_i) }
+    .map{ |b| b.split("\n").map{ _1.split(/[|,]/).map(&:to_i) } }
 
   correct, corrected = [], []
 
