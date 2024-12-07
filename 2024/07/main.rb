@@ -9,13 +9,14 @@ def prep
 end
 
 class Integer
-  def ||(b)
+  def |(b)
     l = Math.log10(b).to_i + 1
     self * 10**l + b
   end
 end
 
-def calc(input, ops = [:*, :+])
+def calc(input, ops = [])
+  ops = [:+, :*] + ops
   input.sum{ |a,e| step(e[0], e, 1, ops, a) ? a : 0 }
 end
 
@@ -25,14 +26,6 @@ def step(r, e, i, ops, a)
   ops.any?{ |op| step( r.send(op, e[i]), e, i + 1, ops, a ) }
 end
 
-def part1(input)
-  calc(input)
-end
-
-def part2(input)
-  calc(input, [:*, :+, :||])
-end
-
 input = time("Prep", false){ prep }
-time("Part 1"){ part1(input) }
-time("Part 2"){ part2(input) }
+time("Part 1"){ calc(input) }
+time("Part 2"){ calc(input, [:|]) }
