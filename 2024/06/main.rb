@@ -19,7 +19,7 @@ end
 
 def walk(grid, gc, put_obs = false, dir = 0)
   path, seen, obss = Set.new, Set.new, Set.new
-
+  
   loop do
     path << gc
     ngc = move(dir, gc[0], gc[1])
