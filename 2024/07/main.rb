@@ -9,23 +9,20 @@ def prep
 end
 
 class Integer
-  def |(b)
+  def ||(b)
     l = Math.log10(b).to_i + 1
     self * 10**l + b
   end
 end
 
 def calc(input, ops = [:*, :+])
-  opsp = input.values.map(&:size).uniq
-    .map{ [_1, ops.repeated_permutation(_1 - 1)] }.to_h
+  input.sum{ |a,e| step(e[0], e, 1, ops, a) ? a : 0 }
+end
 
-  input.sum do |a,e|
-    opsp[e.size].sum do |ops|
-      r = e[0]
-      (1...e.size).each{ r = r.send(ops[_1-1], e[_1]) }
-      r == a ? (break(a)) : 0
-    end
-  end
+def step(r, e, i, ops, a)
+  return true if r == a
+  return false if i == e.size
+  ops.any?{ |op| step( r.send(op, e[i]), e, i + 1, ops, a ) }
 end
 
 def part1(input)
@@ -33,7 +30,7 @@ def part1(input)
 end
 
 def part2(input)
-  calc(input, [:*, :+, :|])
+  calc(input, [:*, :+, :||])
 end
 
 input = time("Prep", false){ prep }
