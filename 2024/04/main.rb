@@ -6,7 +6,7 @@ def prep
   Grid.new(input, true)
 end
 
-def part1(grid)  
+def part1(grid)
   deltas = [1,0,-1].repeated_permutation(2).to_a - [[0,0]]
   chars = "MAS".chars
 
