@@ -5,7 +5,7 @@ def prep
 end
 
 def part1(input)
-  input.scan(/mul\((\d+),(\d+)\)/).sum{ _1[0].to_i * _1[1].to_i }
+  input.scan(/mul\((\d+),(\d+)\)/).sum{ _1.to_i * _2.to_i }
 end
 
 def part2(input)
