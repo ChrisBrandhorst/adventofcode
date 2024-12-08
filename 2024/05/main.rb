@@ -9,16 +9,16 @@ def prep
   [rules, correct, incorrect]
 end
 
+def get_middle_sum(updates)
+  updates.sum{ _1[_1.size/2] }
+end
+
 def part2(rules, updates)
   updates.each do |u|
     u_rules = rules.select{ (_1 & u).size == 2 }
     u.sort!{ |a,b| u_rules.detect{ _1.include?(a) && _1.include?(b) }.first == a ? -1 : 1 }
   end
   get_middle_sum(updates)
-end
-
-def get_middle_sum(updates)
-  updates.sum{ _1[_1.size/2] }
 end
 
 rules, correct, incorrect = time("Prep", false){ prep }
