@@ -8,22 +8,24 @@ def prep
     }.to_h
 end
 
-class Integer
-  def |(b)
-    l = Math.log10(b).to_i + 1
-    self * 10**l + b
+def step(a, e, i, ops)
+  return true if a == 0
+  return false if a != a.to_i || a < 0 || i < 0
+
+  t = e[i]
+  ops.any? do |op|
+    if op == :|
+      mag = 10 ** (Math.log10(t).to_i + 1)
+      a % mag == t ? step( (a - t) / mag, e, i - 1, ops) : false
+    else
+      step(a.send(op, t), e, i - 1, ops)
+    end
   end
 end
 
-def calc(input, ops = [])
-  ops = [:+, :*] + ops
-  input.sum{ |a,e| step(e[0], e, 1, ops, a) ? a : 0 }
-end
-
-def step(r, e, i, ops, a)
-  return true if r == a
-  return false if i == e.size
-  ops.any?{ |op| step( r.send(op, e[i]), e, i + 1, ops, a ) }
+def calc(input, more_ops = [])
+  ops = [:-, :/] + more_ops
+  input.sum{ |a,e| step(a.to_f, e, e.size - 1, ops) ? a : 0 }
 end
 
 input = time("Prep", false){ prep }
