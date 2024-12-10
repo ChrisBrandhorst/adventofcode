@@ -5,44 +5,42 @@ def prep
 end
 
 class Disk
-  attr_reader :blocks, :files, :spaces
+  attr_reader :files, :spaces
 
   def initialize(input)
     @blocks = input.each_with_index.map{ |c,i| Block.new(c, i.even? ? i/2 : nil) }
-    @files, @spaces = blocks.partition.with_index{ |_,i| i.even? }
+    @files, @spaces = @blocks.partition.with_index{ |_,i| i.even? }
   end
 
   def checksum
     sum = 0
     i = 0
     @blocks.each do |b|
-      sum += b.contents.each_with_index.sum{ |v,i2| (i2+i) * v }
+      sum += b.contents.each_with_index.sum{ |v,d| (i+d) * v }
       i += b.size
     end
     sum
   end
 
+  def move!(file, space)
+    unwritten = space.write!(file)
+    file.clear!(unwritten)
+    unwritten
+  end
+
 end
 
 class Block
-  attr_reader :value, :size, :contents
+  attr_reader :size, :value, :contents
 
-  def initialize(c, v = nil)
-    @size = c
-    if v
-      @value = v
-      @contents = [v] * c
+  def initialize(size, value = nil)
+    @size = size
+    if value
+      @value = value
+      @contents = [value] * size
     else
       @contents = []
     end
-  end
-
-  def empty!(remain = 0)
-    @contents = remain == 0 ? [] : [@value] * remain
-  end
-
-  def full?
-    @contents.size == @size
   end
 
   def remaining
@@ -50,30 +48,31 @@ class Block
   end
 
   def write!(file)
-    c, v, r = file.contents.size, file.value, self.remaining
-    if c <= r
-      @contents += [v] * c
+    size, value, remaining = file.contents.size, file.value, self.remaining
+    if size <= remaining
+      @contents += [value] * size
       0
     else
-      @contents += [v] * r
-      c - r
+      @contents += [value] * remaining
+      size - remaining
     end
+  end
+
+  def clear!(keep = 0)
+    @contents = keep == 0 ? [] : [@value] * keep
   end
 
 end
 
 def part1(input)
   disk = Disk.new(input)
-  files, spaces = disk.files, disk.spaces
+  files = disk.files
 
   fi = files.size - 1
-  spaces.each.with_index do |s, si|
-    break if fi <= si
-    until s.full?
-      f = files[fi]
-      remaining = s.write!(f)
-      f.empty!(remaining)
-      fi -= 1 if remaining == 0
+  disk.spaces.each.with_index do |space, si|
+    until space.remaining == 0
+      break if fi <= si
+      fi -= 1 if disk.move!(files[fi], space) == 0
     end
   end
 
@@ -82,13 +81,11 @@ end
 
 def part2(input)
   disk = Disk.new(input)
-  files, spaces = disk.files, disk.spaces
 
-  files.to_enum.with_index.reverse_each do |f, fi|
-    (0...fi).step(1) do |si|
-      if spaces[si].remaining >= f.size
-        spaces[si].write!(f)
-        f.empty!
+  disk.files.to_enum.with_index.reverse_each do |file, fi|
+    disk.spaces[0...fi].each do |space|
+      if space.remaining >= file.size
+        disk.move!(file, space)
         break
       end
     end
