@@ -13,7 +13,8 @@ end
 
 def calc(stones, rep)
   rep.times do |i|
-    stones = stones.inject({}) do |ns,(n,c)|
+    ns = {}
+    stones.each do |n,c|
       if n == 0
         ns.increase(1, c)
       else
@@ -26,8 +27,8 @@ def calc(stones, rep)
           ns.increase(n * 2024, c)
         end
       end
-      ns
     end
+    stones = ns
   end
 
   stones.values.sum
