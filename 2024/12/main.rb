@@ -26,9 +26,8 @@ def calc(grid)
       region << cc
       Dir.each do |d|
         ac = d + cc
-        av = grid[ac]
         q << ac unless region.include?(ac) || q.include?(ac)
-        fences[d] << cc if av != v
+        fences[d] << cc if grid[ac] != v
       end
     end
 
