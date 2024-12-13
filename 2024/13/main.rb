@@ -8,12 +8,12 @@ def prep
     }
 end
 
-def solve(input, factor = 0)
+def solve(input, error = 0)
   input.sum do |(bax,bay),(bbx,bby),(prx,pry)|
-    b = ((prx + factor) * -bay + (pry + factor) * bax) / (bbx * -bay + bby * bax)
-    a = (pry + factor - b * bby) / bay
+    b = ((prx + error) * -bay + (pry + error) * bax) / (bbx * -bay + bby * bax)
+    a = (pry + error - b * bby) / bay
     
-    if a * bax + b * bbx == prx + factor && a * bay + b * bby == pry + factor
+    if a * bax + b * bbx == prx + error && a * bay + b * bby == pry + error
       a * 3 + b * 1
     else
       0
