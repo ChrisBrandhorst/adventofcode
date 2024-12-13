@@ -2,10 +2,7 @@ require_relative '../util/time'
 
 def prep
   File.read("input", chomp: true).split("\n\n")
-    .map{ |s|
-      ba, bb, pr = s.split("\n").map{ _1.scan(/\d+/).map(&:to_i) }
-      [ba, bb, pr]
-    }
+    .map{ |s| s.split("\n").map{ _1.scan(/\d+/).map(&:to_i) } }
 end
 
 def solve(input, error = 0)
