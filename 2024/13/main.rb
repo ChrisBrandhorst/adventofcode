@@ -9,12 +9,7 @@ def solve(input, error = 0)
   input.sum do |(bax,bay),(bbx,bby),(prx,pry)|
     b = (-(prx + error) * bay + (pry + error) * bax) / (-bbx * bay + bby * bax)
     a = (pry + error - b * bby) / bay
-    
-    if a * bax + b * bbx == prx + error && a * bay + b * bby == pry + error
-      a * 3 + b * 1
-    else
-      0
-    end
+    a * bax + b * bbx == prx + error && a * bay + b * bby == pry + error ? a * 3 + b * 1 : 0
   end
 end
 
