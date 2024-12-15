@@ -110,10 +110,14 @@ class Grid
     selected
   end
 
-  def detect(&block)
+  def detect(t = nil, &block)
     (0...@row_count).detect do |y|
       (0...@col_count).detect do |x|
-        return [x,y] if block_given? && yield([x,y], self[x,y])
+        if block_given? && yield([x,y], self[x,y])
+          return [x,y] 
+        elsif !t.nil? && self[x,y] == t
+          return [x,y]
+        end
       end
     end
   end
