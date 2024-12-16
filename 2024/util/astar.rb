@@ -25,7 +25,7 @@ module AStar
       self.as_seen(current)
       self.as_neighbours(current).each do |neighbour|
         next if self.as_seen?(neighbour)
-        tentative_gScore = gScore[current] + self.as_distance(current, neighbour)
+        tentative_gScore = gScore[current] + self.as_distance(cameFrom, current, neighbour)
 
         if !gScore[neighbour] || tentative_gScore <= gScore[neighbour]
           cameFrom[neighbour] = current
@@ -43,11 +43,11 @@ module AStar
     
   end
 
-  def as_neighbours; throw new NotImplementedError; end
+  def as_neighbours(current); throw new NotImplementedError; end
   def as_heuristic; throw new NotImplementedError; end
   def as_distance; throw new NotImplementedError; end
-  def as_at_goal; throw new NotImplementedError; end
-  def as_backtracks; throw new NotImplementedError; end
+  def as_at_goal?; throw new NotImplementedError; end
+  def as_backtracks?; throw new NotImplementedError; end
   def as_reset!; end
   def as_seen(current); end
   def as_seen?(neighbour); end

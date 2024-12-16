@@ -24,8 +24,12 @@ class PriorityQueue
     @keys = Set.new
   end
 
-  def <<(val, prio = nil)
-    val, prio = *val if val.is_a?(Array)
+  def <<(val)
+    push(val, nil)
+  end
+
+  def push(val, prio = nil)
+    # val, prio = *val if val.is_a?(Array)
     @elements << Element.new(val, prio)
     @keys << val
     # bubble up the element that we just added
