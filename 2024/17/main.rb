@@ -25,7 +25,7 @@ def part1(regs, nos)
     jumped = false
     case opcode
     when 0
-      regs[0] = regs[0] / ( 2 ** combo(operand, regs) )
+      regs[0] = regs[0] / 2**combo(operand, regs)
     when 1
       regs[1] = regs[1] ^ operand
     when 2
@@ -40,9 +40,9 @@ def part1(regs, nos)
     when 5
       out << combo(operand, regs) % 8
     when 6
-      regs[1] = regs[0] / ( 2 ** combo(operand, regs) )
+      regs[1] = regs[0] / 2**combo(operand, regs)
     when 7
-      regs[2] = regs[0] / ( 2 ** combo(operand, regs) )
+      regs[2] = regs[0] / 2**combo(operand, regs)
     end
 
     pointer += 2 unless jumped
@@ -54,8 +54,8 @@ end
 def part1_coded(regs, nos)
   out = []
   loop do
-    regs[1] = (regs[0] % 8) ^ 2
-    out << ((regs[0] / 2**regs[1]) ^ regs[1] ^ 7) % 8
+    regs[1] = regs[0] % 8 ^ 2
+    out << (regs[0] / 2**regs[1] ^ regs[1] ^ 7) % 8
     regs[0] = regs[0] / 8
     break if regs[0] == 0
   end
@@ -66,9 +66,9 @@ def part2(regs, nos)
   a = 0
   nos.reverse_each do |t|
     8.times do
-      b = (a % 8) ^ 2
-      b = ((a / 2**b) ^ b ^ 7) % 8
-      break a *= 8 if b == t
+      b = a % 8 ^ 2
+      b = a / 2**b ^ b ^ 7
+      break a *= 8 if b % 8 == t
       a += 1
     end
   end
