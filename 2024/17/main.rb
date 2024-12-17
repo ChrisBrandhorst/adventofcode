@@ -52,7 +52,7 @@ def part2(nos)
 
   until q.empty?
     a, i = q.pop
-    (a..a+7).each do |a|
+    (a...a+8).each do |a|
       if part1([a,0,0], nos_part)[0] == nos[i]
         if i == 0
           low = a if a < low
