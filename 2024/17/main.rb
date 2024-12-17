@@ -6,11 +6,7 @@ def prep
 end
 
 def combo(operand, regs)
-  if operand <= 3
-    operand
-  else
-    regs[operand - 4]
-  end
+  operand <= 3 ? operand : regs[operand - 4]
 end
 
 def part1(regs, nos)
