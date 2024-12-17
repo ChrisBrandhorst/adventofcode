@@ -42,34 +42,31 @@ def part1(regs, nos)
     pointer += 2 unless jumped
   end
 
-  out.join(",")
-end
-
-def part1_coded(regs, nos)
-  out = []
-  loop do
-    regs[1] = regs[0] % 8 ^ 2
-    out << (regs[0] / 2**regs[1] ^ regs[1] ^ 7) % 8
-    regs[0] = regs[0] / 8
-    break if regs[0] == 0
-  end
-  out.join(",")
+  out
 end
 
 def part2(nos)
-  a = 0
-  nos.reverse_each do |t|
-    8.times do
-      b = a % 8 ^ 2
-      b = (a / 2**b ^ b ^ 7) % 8
-      break a *= 8 if b == t
-      a += 1
+  low = Float::INFINITY
+  q = [[0, nos.length - 1]]
+  nos_part = nos[0...-2]
+
+  until q.empty?
+    a, i = q.pop
+    (a..a+7).each do |a|
+      if part1([a,0,0], nos_part)[0] == nos[i]
+        if i == 0
+          low = a if a < low
+        else
+          q << [a * 8, i - 1]
+        end
+      end
     end
   end
-  a / 8
+
+  low
 end
 
 regs, nos = time("Prep", false){ prep }
-time("Part 1v0"){ part1(regs.clone, nos) }
-time("Part 1v1"){ part1_coded(regs.clone, nos) }
-time("Part 2"){ part2(nos) }
+time("Part 1"){ part1(regs.clone, nos).join(",") }
+a = time("Part 2"){ part2(nos) }
+time("Part 2 check"){ r = part1([a,0,0], nos); "#{r.join(",")} / #{r == nos}" }
