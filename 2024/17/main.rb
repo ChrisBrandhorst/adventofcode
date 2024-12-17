@@ -10,9 +10,7 @@ def combo(operand, regs)
 end
 
 def part1(regs, nos)
-  regs = regs.clone
-  pointer = 0
-  out = []
+  pointer, out = 0, []
 
   while nos[pointer]
     opcode = nos[pointer]
@@ -58,13 +56,13 @@ def part1_coded(regs, nos)
   out.join(",")
 end
 
-def part2(regs, nos)
+def part2(nos)
   a = 0
   nos.reverse_each do |t|
     8.times do
       b = a % 8 ^ 2
-      b = a / 2**b ^ b ^ 7
-      break a *= 8 if b % 8 == t
+      b = (a / 2**b ^ b ^ 7) % 8
+      break a *= 8 if b == t
       a += 1
     end
   end
@@ -72,6 +70,6 @@ def part2(regs, nos)
 end
 
 regs, nos = time("Prep", false){ prep }
-time("Part 1v0"){ part1(regs, nos) }
-time("Part 1v1"){ part1_coded(regs, nos) }
-time("Part 2"){ part2(regs, nos) }
+time("Part 1v0"){ part1(regs.clone, nos) }
+time("Part 1v1"){ part1_coded(regs.clone, nos) }
+time("Part 2"){ part2(nos) }
