@@ -11,7 +11,7 @@ module AStar
     fScoreStart = self.as_heuristic(start, goal)
 
     open_set = PriorityQueue.new
-    open_set << [start, -fScoreStart]
+    open_set.push(start, -fScoreStart)
 
     until open_set.empty? do
       current = open_set.pop
@@ -33,7 +33,7 @@ module AStar
           fScoreNeighbour = tentative_gScore + self.as_heuristic(neighbour, goal)
 
           if !open_set.include?(neighbour) && !self.as_backtracks?(cameFrom, current, neighbour)
-            open_set << [neighbour, -fScoreNeighbour]
+            open_set.push(neighbour, -fScoreNeighbour)
           end
         end
 
@@ -44,10 +44,10 @@ module AStar
   end
 
   def as_neighbours(current); throw new NotImplementedError; end
-  def as_heuristic; throw new NotImplementedError; end
-  def as_distance; throw new NotImplementedError; end
-  def as_at_goal?; throw new NotImplementedError; end
-  def as_backtracks?; throw new NotImplementedError; end
+  def as_heuristic(neighbour, goal); throw new NotImplementedError; end
+  def as_distance(cameFrom, current, neighbour); throw new NotImplementedError; end
+  def as_at_goal?(current, goal); throw new NotImplementedError; end
+  def as_backtracks?(cameFrom, current, neighbour); throw new NotImplementedError; end
   def as_reset!; end
   def as_seen(current); end
   def as_seen?(neighbour); end
