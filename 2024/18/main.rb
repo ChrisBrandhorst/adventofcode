@@ -39,8 +39,7 @@ end
 
 def build_space(bytes, max_bytes)
   size = bytes.flatten.max + 1
-  points = (("." * size + "\n") * size).split("\n").map(&:chars)
-  space = Space.new(points)
+  space = Space.new( (("." * size + "\n") * size).split("\n").map(&:chars) )
   bytes[0...max_bytes].each{ space[_1] = "#" }
   [space, [0,0], [size-1,size-1]]
 end
@@ -52,20 +51,18 @@ end
 
 def part2(bytes, max_bytes)
   l, r = max_bytes + 1, bytes.size - 1
-  mem = []
   while l < r
     m = (l + r) / 2
     space, start, fin = build_space(bytes, m)
-    mem[m] = !space.astar(start, fin).nil?
-    if mem[m]
+    if space.astar(start, fin)
+      latest = m
       l = m + 1
     else
       r = m - 1
     end
   end
   
-  last = mem.rindex{ _1 == true }
-  return bytes[last].join(",")
+  return bytes[latest].join(",")
 end
 
 MAX_BYTES = 1024
