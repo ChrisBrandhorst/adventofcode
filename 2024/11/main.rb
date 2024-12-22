@@ -4,27 +4,20 @@ def prep
   File.read("input", chomp: true).split.map(&:to_i).tally
 end
 
-class Hash
-  def increase(k, v)
-    self[k] ||= 0
-    self[k] += v
-  end
-end
-
 def calc(stones, rep)
   rep.times do |i|
-    ns = {}
+    ns = Hash.new(0)
     stones.each do |n,c|
       if n == 0
-        ns.increase(1, c)
+        ns[1] += c
       else
         nod = Math.log10(n).to_i + 1
         if nod.even?
           pwr = 10 ** (nod / 2)
-          ns.increase(n / pwr, c)
-          ns.increase(n % pwr, c)
+          ns[n / pwr] += c
+          ns[n % pwr] += c
         else
-          ns.increase(n * 2024, c)
+          ns[n * 2024] += c
         end
       end
     end
