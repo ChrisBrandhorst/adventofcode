@@ -12,29 +12,29 @@ end
 
 def part1(input)
   input.sum do |secret|
-    2000.times{ secret = evolve(secret) }
+    2000.times.each{ secret = evolve(secret) }
     secret
   end
 end
 
 def part2(input)
-
   all_seqs = Hash.new(0)
+
   input.each do |secret|
     prev_price = nil
-    seq = []
+    last = []
     secret_seqs = Set.new
 
     2000.times do |i|
       price = secret % 10
       if prev_price
-        seq << price - prev_price
-        if seq.size == 4
-          unless secret_seqs.include?(seq)
-            all_seqs[seq] += price
-            secret_seqs << seq
+        last << price - prev_price
+        if last.size == 4
+          unless secret_seqs.include?(last)
+            all_seqs[last] += price
+            secret_seqs << last
           end
-          seq = seq.slice(1,3)
+          last = last.slice(1,3)
         end
       end
       prev_price = price
