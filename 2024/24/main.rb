@@ -65,10 +65,9 @@ end
 def fix_block(i, gates)
   no = i.to_s.rjust(2, "0")
 
-  # These are certainties:
-  # x/y-input block is always OK
+  # The two x/y-input blocks can always be found by looking at a single x-input
   and1, xor1 = gates.select{ _1.has_in?("x#{no}") }.sort{ _1.op <=> _2.op }
-  # We have fixed the z-out blocks, so XOR2 and AND2 
+  # We have fixed the z-out blocks, so XOR2 and AND2 can also be found
   xor2 = gates.detect{ _1.out == "z#{no}" }
   and2 = gates.detect{ _1.has_in?(xor2.in1) && _1.has_in?(xor2.in2) && _1.op == "AND" }
 
@@ -96,7 +95,7 @@ def fix_block(i, gates)
 end
 
 def fix_z_out(wrong, gates)
-  # These are certainties
+  # The two x/y-input blocks can always be found by looking at a single x-input
   and1, xor1 = gates.select{ _1.has_in?("x#{wrong.z_no}") }.sort{ _1.op <=> _2.op }
 
   # Find the other XOR gate for this block, that gate should have a z-out
@@ -107,7 +106,7 @@ def fix_z_out(wrong, gates)
   swap(real_out, wrong)
 end
 
-# See adder_block.png
+# See adder_block.png to check which gates are named how
 def part2(wires, gates)
   outs = []
 
@@ -116,7 +115,7 @@ def part2(wires, gates)
     outs += fix_z_out(g, gates)
   end
 
-  # Then correct the others
+  # Then fix the other swapped wires
   correct = get_value(wires, "x") + get_value(wires, "y")
   loop do
     # Check the index of the least significant difference with the correct answer
