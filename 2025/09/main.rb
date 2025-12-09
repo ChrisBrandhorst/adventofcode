@@ -14,22 +14,19 @@ def square_surface(a, b)
   ((a[0]-b[0]).abs+1) * ((a[1]-b[1]).abs+1)
 end
 
-def line_outside_of_rect?(la, lb, sa, sb)
-  s_min_x = sa[0] < sb[0] ? sa[0] : sb[0]
-  s_max_x = sa[0] < sb[0] ? sb[0] : sa[0]
-  s_min_y = sa[1] < sb[1] ? sa[1] : sb[1]
-  s_max_y = sa[1] < sb[1] ? sb[1] : sa[1]
-
-  la[0] <= s_min_x && lb[0] <= s_min_x ||
-  la[0] >= s_max_x && lb[0] >= s_max_x ||
-  la[1] <= s_min_y && lb[1] <= s_min_y ||
-  la[1] >= s_max_y && lb[1] >= s_max_y
-end
-
 def part2(input)
   lines = input.each_cons(2).to_a
-  input.combination(2).filter_map do |sa,sb|
-    square_surface(sa, sb) if lines.all?{ |la,lb| line_outside_of_rect?(la, lb, sa, sb) }
+  input.combination(2).filter_map do |a,b|
+    min_x = a[0] < b[0] ? a[0] : b[0]
+    max_x = a[0] < b[0] ? b[0] : a[0]
+    min_y = a[1] < b[1] ? a[1] : b[1]
+    max_y = a[1] < b[1] ? b[1] : a[1]
+    square_surface(a, b) if lines.all? do |la,lb|
+      la[0] <= min_x && lb[0] <= min_x ||
+      la[0] >= max_x && lb[0] >= max_x ||
+      la[1] <= min_y && lb[1] <= min_y ||
+      la[1] >= max_y && lb[1] >= max_y
+    end
   end.max
 end
 
